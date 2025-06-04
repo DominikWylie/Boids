@@ -1,13 +1,16 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{38E3A37A-4242-7584-C9A8-0E994E214586}",
+	"EngineAssociation": "{C46578AB-42D2-C427-7E6D-A8BC7BB2F06C}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
 		{
 			"Name": "Boids",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
 		}
 	],
 	"Plugins": [
