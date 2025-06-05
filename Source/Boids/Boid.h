@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Octree"
+//#include "Octree"
 
 
 #include "Boid.generated.h"
 
 UCLASS()
-class BOIDS_API ABoid : public AActor, Octree
+class BOIDS_API ABoid : public AActor
 {
 	GENERATED_BODY()
 	
