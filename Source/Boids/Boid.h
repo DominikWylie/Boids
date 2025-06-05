@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ABoid.generated.h"
+#include "Boid.generated.h"
 
 UCLASS()
-class BOIDS_API AABoid : public AActor
+class BOIDS_API ABoid : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AABoid();
+	ABoid();
 
 protected:
 	// Called when the game starts or when spawned
