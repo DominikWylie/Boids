@@ -1,6 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Boid.h"
+#include "OctreeMain.h"
+#include "Kismet/GameplayStatics.h"
+#include "OctreeInterface.h"
+
 #include "BoidSpawner.h"
 
 // Sets default values
@@ -21,15 +25,29 @@ void ABoidSpawner::BeginPlay()
 	if (World) {
 		World->GetTimerManager().SetTimer(MyTimerHandle, this, &ABoidSpawner::SpawnTimer, 1.0f, true);
 	}
+
+	OctreeMain = Cast<AOctreeMain>(UGameplayStatics::GetActorOfClass(World, AOctreeMain::StaticClass()));
 }
 
 void ABoidSpawner::SpawnTimer()
 {
 	if (World) {
-		AActor* SpawnedActor = World->SpawnActor<ABoid>(BoidBlueprint, GetActorLocation(), FRotator::ZeroRotator);
+		AActor* SpawnedBoid = World->SpawnActor<ABoid>(BoidBlueprint, GetActorLocation(), FRotator::ZeroRotator);
 
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Hit"));
+		//IOctreeInterface* BoidsInterface = Cast<IOctreeInterface>(SpawnedBoid);
+
+		//TScriptInterface<IOctreeInterface> scriptInterfce{  };
+
+		//scriptInterfce.SetInterface(BoidsInterface);
+
+		//OctreeMain->AddNode(scriptInterfce);
+
+		IOctreeInterface* BoidsInterface = Cast<IOctreeInterface>(SpawnedBoid);
+
+		OctreeMain->AddNode(BoidsInterface);
+
+		//if (GEngine)
+		//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Hit"));
 	}
 }
 

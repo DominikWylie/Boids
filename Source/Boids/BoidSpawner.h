@@ -4,9 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+//#include "OctreeMain.h"
+
 #include "BoidSpawner.generated.h"
 
 class ABoid;
+class AOctreeMain;
 
 UCLASS()
 class BOIDS_API ABoidSpawner : public AActor
@@ -33,4 +36,5 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<ABoid> BoidBlueprint;
 
+	TObjectPtr<AOctreeMain> OctreeMain;
 };
