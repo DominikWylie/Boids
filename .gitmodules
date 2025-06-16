@@ -1,3 +1,4 @@
 [submodule "Plugins/Octree"]
 	path = Plugins/Octree
 	url = https://github.com/DominikWylie/Octree.git
+	branch = main
