@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "OctreeInterface.h"
 
+#include "OctreeInterface.h"
 
 #include "Boid.generated.h"
 

@@ -15,8 +15,8 @@ UCLASS()
 class BOIDS_API ABoidSpawner : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ABoidSpawner();
 
@@ -29,12 +29,12 @@ protected:
 	FTimerHandle MyTimerHandle;
 	UWorld* World;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<ABoid> BoidBlueprint;
 
-	TObjectPtr<AOctreeMain> OctreeMain;
+	TObjectPtr<AOctreeMain> Octree;
 };
