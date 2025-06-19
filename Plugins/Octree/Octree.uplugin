@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Octree",
+	"Description": "A simpler octree fuled by documentaionless spite",
+	"Category": "Other",
+	"CreatedBy": "Domink Wylie",
+	"CreatedByURL": "dominikwylie.com",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "Octree",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
