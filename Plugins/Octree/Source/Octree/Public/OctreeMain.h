@@ -31,13 +31,13 @@ public:
 
 	void AddNode(IOctreeInterface* Node);
 
-private:
-
-	//virtual void BeginPlay() override;
+protected:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void BeginPlay() override;
 
 	void DrawBox();
 
@@ -45,7 +45,7 @@ private:
 
 	TArray<IOctreeInterface*> NodeList;
 
-	TUniquePtr<Octant> Octants[2];
+	TUniquePtr<Octant> Octants[8];
 
 	bool subdevided = false;
 

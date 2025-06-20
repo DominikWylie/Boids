@@ -24,7 +24,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void SpawnTimer();
+	void Spawn();
 
 	FTimerHandle MyTimerHandle;
 	UWorld* World;

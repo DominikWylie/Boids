@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "OctreeInterface.h"
-
 #include "OctreeMain.h"
+
+#include "OctreeInterface.h"
 
 // Sets default values
 AOctreeMain::AOctreeMain()
@@ -55,11 +55,42 @@ void AOctreeMain::SubdivideTree()
 {
 	FVector WorldLoc = GetActorLocation();
 
-	Octants[0] = MakeUnique<Octant>(FirstCorner, SecondCorner - (FirstCorner / 2));
-	Octants[1] = MakeUnique<Octant>(FirstCorner - (SecondCorner / 2), SecondCorner);
+	FVector HalfDistance = (SecondCorner - FirstCorner) / 2;
 
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("subdivide"));
+	//FVector makeItClearthe4ththisbetemp = FVector(20.f, 20.f, 20.f);
+
+	//top front left
+	Octants[0] = MakeUnique<Octant>(FirstCorner, FirstCorner + HalfDistance);
+
+	//top front right
+	FVector Octant2FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y, FirstCorner.Z);
+	Octants[1] = MakeUnique<Octant>(Octant2FirstCorner, Octant2FirstCorner + HalfDistance);
+
+	//top back left
+	FVector Octant3FirstCorner = FVector(FirstCorner.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z);
+	Octants[2] = MakeUnique<Octant>(Octant3FirstCorner, Octant3FirstCorner + HalfDistance);
+
+	//top back right
+	FVector Octant4FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z);
+	Octants[3] = MakeUnique<Octant>(Octant4FirstCorner, Octant4FirstCorner + HalfDistance);
+
+
+
+	//bottom front left
+	FVector Octant5FirstCorner = FVector(FirstCorner.X, FirstCorner.Y, FirstCorner.Z + HalfDistance.Z);
+	Octants[4] = MakeUnique<Octant>(Octant5FirstCorner, Octant5FirstCorner + HalfDistance);
+
+	//bottom front right
+	FVector Octant6FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y, FirstCorner.Z + HalfDistance.Z);
+	Octants[5] = MakeUnique<Octant>(Octant6FirstCorner, Octant6FirstCorner + HalfDistance);
+
+	//bottom back left
+	FVector Octant7FirstCorner = FVector(FirstCorner.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z + HalfDistance.Z);
+	Octants[6] = MakeUnique<Octant>(Octant7FirstCorner, Octant7FirstCorner + HalfDistance);
+
+	//bottom back right
+	FVector Octant8FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z + HalfDistance.Z);
+	Octants[7] = MakeUnique<Octant>(Octant7FirstCorner, Octant7FirstCorner + HalfDistance);
 }
 
 void AOctreeMain::Tick(float DeltaTime)
@@ -68,8 +99,11 @@ void AOctreeMain::Tick(float DeltaTime)
 		Super::Tick(DeltaTime);
 	}
 
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("ticc"));
+
 #if WITH_EDITOR
-		DrawBox();
+	DrawBox();
 
 		if (subdevided) {
 
@@ -82,5 +116,36 @@ void AOctreeMain::Tick(float DeltaTime)
 			}
 		}
 #endif
+}
+
+void AOctreeMain::BeginPlay()
+{
+
+	if (FirstCorner.X < SecondCorner.X) {
+		int32 temp = FirstCorner.X;
+		FirstCorner.X = SecondCorner.X;
+		SecondCorner.X = temp;
+
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped x"));
+	}
+
+	if (FirstCorner.Y < SecondCorner.Y) {
+		int32 temp = FirstCorner.Y;
+		FirstCorner.Y = SecondCorner.Y;
+		SecondCorner.Y = temp;
+
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped y"));
+	}
+
+	if (FirstCorner.Z < SecondCorner.Z) {
+		int32 temp = FirstCorner.Z;
+		FirstCorner.Z = SecondCorner.Z;
+		SecondCorner.Z = temp;
+
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped z"));
+	}
 }
 
