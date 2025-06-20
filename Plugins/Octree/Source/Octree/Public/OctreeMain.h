@@ -29,6 +29,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bBoundingBoxVisibiliy = true;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	uint8 NodesPerOctant = 1;
+
 	void AddNode(IOctreeInterface* Node);
 
 protected:
@@ -42,6 +45,9 @@ protected:
 	void DrawBox();
 
 	void SubdivideTree();
+
+	FVector WorldLocation;
+	UWorld* World;
 
 	TArray<IOctreeInterface*> NodeList;
 

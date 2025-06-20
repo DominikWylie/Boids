@@ -15,6 +15,8 @@ AOctreeMain::AOctreeMain()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
+	World = GetWorld();
+
 #if WITH_EDITOR
 	bRunConstructionScriptOnDrag = true; //for visual updates while moving in editor
 #endif
@@ -38,6 +40,8 @@ void AOctreeMain::AddNode(IOctreeInterface* Node)
 void AOctreeMain::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
+
+	WorldLocation = GetActorLocation();
 }
 
 void AOctreeMain::DrawBox()
@@ -46,9 +50,7 @@ void AOctreeMain::DrawBox()
 		return;
 	}
 
-	FVector WorldLoc = GetActorLocation();
-
-	DrawDebugBox(GetWorld(), ((SecondCorner + WorldLoc) + (FirstCorner + WorldLoc)) / 2, (FirstCorner - SecondCorner) / 2, FColor::Red);
+	DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, FColor::Red);
 }
 
 void AOctreeMain::SubdivideTree()
@@ -97,9 +99,9 @@ void AOctreeMain::SubdivideTree()
 	//Octants[7] = MakeUnique<Octant>(Octant7FirstCorner + makeItClearthe4ththisbetemp, (Octant7FirstCorner + HalfDistance) + makeItClearthe4ththisbetemp);
 
 
-	for (TUniquePtr<Octant>& octant : Octants) {
-		octant->Subdivide();
-	}
+	//for (TUniquePtr<Octant>& octant : Octants) {
+	//	octant->Subdivide();
+	//}
 
 }
 
@@ -113,16 +115,12 @@ void AOctreeMain::Tick(float DeltaTime)
 	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("ticc"));
 
 #if WITH_EDITOR
-	DrawBox();
 
+	DrawBox();
 		if (subdevided) {
 
-			//shouldnt have these in tick future problem
-			UWorld* world = GetWorld();
-			FVector WorldLoc = GetActorLocation();
-
 			for (TUniquePtr<Octant>& octant : Octants) {
-				octant->Tick(world, WorldLoc);
+				octant->Tick(World, WorldLocation);
 			}
 		}
 #endif
@@ -130,6 +128,9 @@ void AOctreeMain::Tick(float DeltaTime)
 
 void AOctreeMain::BeginPlay()
 {
+	WorldLocation = GetActorLocation();
+
+	if(!IsValid(World)) World = GetWorld();
 
 	if (FirstCorner.X < SecondCorner.X) {
 		int32 temp = FirstCorner.X;
