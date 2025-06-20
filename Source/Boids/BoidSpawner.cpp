@@ -23,18 +23,18 @@ void ABoidSpawner::BeginPlay()
 	World = GetWorld();
 
 	if (World) {
-		World->GetTimerManager().SetTimer(MyTimerHandle, this, &ABoidSpawner::SpawnTimer, 1.0f, true);
+		World->GetTimerManager().SetTimer(MyTimerHandle, this, &ABoidSpawner::Spawn, 1.0f, true);
 	}
 
 	Octree = Cast<AOctreeMain>(UGameplayStatics::GetActorOfClass(World, AOctreeMain::StaticClass()));
 }
 
-void ABoidSpawner::SpawnTimer()
+void ABoidSpawner::Spawn()
 {
 	if (!IsValid(Octree)) {
-		UE_LOG(LogTemp, Error, TEXT("No Octree to send to"));
+		UE_LOG(LogTemp, Error, TEXT("No Octree to send to. [%s:%d] in %s"),
+			TEXT(__FILE__), __LINE__, TEXT(__FUNCTION__));
 		return;
-
 	}
 
 	if (World) {
