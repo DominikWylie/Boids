@@ -1,12 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "BoidSpawner.h"
 
 #include "Boid.h"
 #include "OctreeMain.h"
 #include "Kismet/GameplayStatics.h"
 //#include "OctreeInterface.h"
-
-#include "BoidSpawner.h"
 
 // Sets default values
 ABoidSpawner::ABoidSpawner()
@@ -32,6 +31,12 @@ void ABoidSpawner::BeginPlay()
 
 void ABoidSpawner::SpawnTimer()
 {
+	if (!IsValid(Octree)) {
+		UE_LOG(LogTemp, Error, TEXT("No Octree to send to"));
+		return;
+
+	}
+
 	if (World) {
 		AActor* SpawnedBoid = World->SpawnActor<ABoid>(BoidBlueprint, GetActorLocation(), FRotator::ZeroRotator);
 
