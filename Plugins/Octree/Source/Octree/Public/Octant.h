@@ -15,8 +15,14 @@ public:
 
 	void Tick(UWorld* World, FVector WorldLocation);
 
+	void Subdivide();
+
 private:
 
 	FVector FirstCorner;
 	FVector SecondCorner;
+
+	bool subdevided = false;
+
+	TUniquePtr<Octant> Octants[8];
 };

@@ -53,11 +53,13 @@ void AOctreeMain::DrawBox()
 
 void AOctreeMain::SubdivideTree()
 {
-	FVector WorldLoc = GetActorLocation();
+	if (subdevided) {
+		return;
+	}
 
 	FVector HalfDistance = (SecondCorner - FirstCorner) / 2;
 
-	//FVector makeItClearthe4ththisbetemp = FVector(20.f, 20.f, 20.f);
+	FVector makeItClearthe4ththisbetemp = FVector(50.f, 50.f, 50.f);
 
 	//top front left
 	Octants[0] = MakeUnique<Octant>(FirstCorner, FirstCorner + HalfDistance);
@@ -90,7 +92,15 @@ void AOctreeMain::SubdivideTree()
 
 	//bottom back right
 	FVector Octant8FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z + HalfDistance.Z);
-	Octants[7] = MakeUnique<Octant>(Octant7FirstCorner, Octant7FirstCorner + HalfDistance);
+	Octants[7] = MakeUnique<Octant>(Octant8FirstCorner, Octant8FirstCorner + HalfDistance);
+
+	//Octants[7] = MakeUnique<Octant>(Octant7FirstCorner + makeItClearthe4ththisbetemp, (Octant7FirstCorner + HalfDistance) + makeItClearthe4ththisbetemp);
+
+
+	for (TUniquePtr<Octant>& octant : Octants) {
+		octant->Subdivide();
+	}
+
 }
 
 void AOctreeMain::Tick(float DeltaTime)
