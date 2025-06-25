@@ -23,7 +23,7 @@ void ABoidSpawner::BeginPlay()
 	World = GetWorld();
 
 	if (World) {
-		World->GetTimerManager().SetTimer(MyTimerHandle, this, &ABoidSpawner::Spawn, 1.0f, true);
+		World->GetTimerManager().SetTimer(MyTimerHandle, this, &ABoidSpawner::Spawn, 1.0f, false);
 	}
 
 	Octree = Cast<AOctreeMain>(UGameplayStatics::GetActorOfClass(World, AOctreeMain::StaticClass()));

@@ -42,9 +42,14 @@ protected:
 
 	virtual void BeginPlay() override;
 
+private:
 	void DrawBox();
 
 	void SubdivideTree();
+
+	bool IsWithinArea(const FVector& Location);
+
+	void RebuildTree();
 
 	FVector WorldLocation;
 	UWorld* World;

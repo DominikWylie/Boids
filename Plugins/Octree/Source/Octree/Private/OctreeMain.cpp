@@ -12,7 +12,6 @@ AOctreeMain::AOctreeMain()
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
-	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	World = GetWorld();
@@ -24,17 +23,29 @@ AOctreeMain::AOctreeMain()
 
 void AOctreeMain::AddNode(IOctreeInterface* Node)
 {
-	//NodeList.Add(Node.GetInterface());
+	//check if node is in area, if not - ignore.
+	
+	//FVector NodePosition = Node->GetPosition();
+
+	if (!IsWithinArea(Node->GetPosition())) {
+		return;
+	}
+
 	NodeList.Add(Node);
 
 
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("node Added"));
 
-	if (!subdevided) {
-		SubdivideTree();
-		subdevided = true;
-	}
+	//check the max number of nodes
+
+	//if (!subdevided) {
+	//	SubdivideTree();
+	//	subdevided = true;
+
+	//	if (GEngine)
+	//		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("subdevided"));
+	//}
 }
 
 void AOctreeMain::OnConstruction(const FTransform& Transform)
@@ -50,14 +61,17 @@ void AOctreeMain::DrawBox()
 		return;
 	}
 
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Boundbox"));
+
 	DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, FColor::Red);
 }
 
 void AOctreeMain::SubdivideTree()
 {
-	if (subdevided) {
-		return;
-	}
+	//if (subdevided) {
+	//	return;
+	//}
 
 	FVector HalfDistance = (SecondCorner - FirstCorner) / 2;
 
@@ -103,24 +117,58 @@ void AOctreeMain::SubdivideTree()
 	//	octant->Subdivide();
 	//}
 
+	subdevided = true;
+
+}
+
+bool AOctreeMain::IsWithinArea(const FVector& Location)
+{
+	if (Location.X > FirstCorner.X ||
+		Location.Y > FirstCorner.Y ||
+		Location.Z > FirstCorner.Z) {
+		return false;
+	}
+
+	if (Location.X < SecondCorner.X ||
+		Location.Y < SecondCorner.Y ||
+		Location.Z < SecondCorner.Z) {
+		return false;
+	}
+	
+	return true;
+}
+
+void AOctreeMain::RebuildTree()
+{
+	//all (boids) should be withing the main at all times, if it leaves, have a "left" function that is called to the node
+
+	//uint8 NodeCount = 0;
+
+	for (IOctreeInterface*& Node : NodeList) {
+		if (!IsWithinArea(Node->GetPosition())) {
+
+		}
+	}
+
 }
 
 void AOctreeMain::Tick(float DeltaTime)
 {
 	if (IsRunningGame()) {
 		Super::Tick(DeltaTime);
-	}
+	} 
 
-	//if (GEngine)
-	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("ticc"));
+	//rebuildTree
+
+
+
 
 #if WITH_EDITOR
-
 	DrawBox();
-		if (subdevided) {
 
+		if (subdevided) {
 			for (TUniquePtr<Octant>& octant : Octants) {
-				octant->Tick(World, WorldLocation);
+				if (octant) octant->Tick(World, WorldLocation);
 			}
 		}
 #endif
@@ -130,7 +178,7 @@ void AOctreeMain::BeginPlay()
 {
 	WorldLocation = GetActorLocation();
 
-	if(!IsValid(World)) World = GetWorld();
+	World = GetWorld();
 
 	if (FirstCorner.X < SecondCorner.X) {
 		int32 temp = FirstCorner.X;
