@@ -31,4 +31,6 @@ public:
 
 	FVector GetPosition() const override;
 
+	void Kill() override;
+
 };

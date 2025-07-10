@@ -25,9 +25,18 @@ void ABoid::Tick(float DeltaTime)
 
 	SetActorLocation(GetActorLocation() + (GetActorForwardVector() * Speed * DeltaTime));
 
+	FVector loc = GetActorLocation();
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Green, FString::Printf(TEXT("X %f, Y %f, Z %f, "), loc.X, loc.Y, loc.Z));
 }
 
 FVector ABoid::GetPosition() const
 {
 	return GetActorLocation();
+}
+
+void ABoid::Kill()
+{
+	Destroy();
 }

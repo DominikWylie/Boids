@@ -28,6 +28,8 @@ void AOctreeMain::AddNode(IOctreeInterface* Node)
 	//FVector NodePosition = Node->GetPosition();
 
 	if (!IsWithinArea(Node->GetPosition())) {
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("node out of area"));
 		return;
 	}
 
@@ -58,6 +60,8 @@ void AOctreeMain::OnConstruction(const FTransform& Transform)
 void AOctreeMain::DrawBox()
 {
 	if (!bBoundingBoxVisibiliy) {
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("invisible"));
 		return;
 	}
 
@@ -123,15 +127,18 @@ void AOctreeMain::SubdivideTree()
 
 bool AOctreeMain::IsWithinArea(const FVector& Location)
 {
-	if (Location.X > FirstCorner.X ||
-		Location.Y > FirstCorner.Y ||
-		Location.Z > FirstCorner.Z) {
+	FVector FirstWorldCorner = FirstCorner + GetActorLocation();
+	FVector SecondWorldCorner = SecondCorner + GetActorLocation();
+	
+	if (Location.X > FirstWorldCorner.X ||
+		Location.Y > FirstWorldCorner.Y ||
+		Location.Z > FirstWorldCorner.Z) {
 		return false;
 	}
 
-	if (Location.X < SecondCorner.X ||
-		Location.Y < SecondCorner.Y ||
-		Location.Z < SecondCorner.Z) {
+	if (Location.X < SecondWorldCorner.X ||
+		Location.Y < SecondWorldCorner.Y ||
+		Location.Z < SecondWorldCorner.Z) {
 		return false;
 	}
 	
@@ -140,32 +147,61 @@ bool AOctreeMain::IsWithinArea(const FVector& Location)
 
 void AOctreeMain::RebuildTree()
 {
-	//all (boids) should be withing the main at all times, if it leaves, have a "left" function that is called to the node
+	//all (boids) should be within the main at all times, if it leaves, have a "left" function that is called to the node
 
 	//uint8 NodeCount = 0;
 
-	for (IOctreeInterface*& Node : NodeList) {
-		if (!IsWithinArea(Node->GetPosition())) {
 
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("node rebuild"));
+
+	TArray<IOctreeInterface*> NodesToRemove;
+
+	for (IOctreeInterface*& Node : NodeList) {
+
+		FVector loc = FirstCorner + GetActorLocation();
+
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(2, 15.0f, FColor::Blue, FString::Printf(TEXT("X %f, Y %f, Z %f, "), loc.X, loc.Y, loc.Z));
+
+		if (!IsWithinArea(Node->GetPosition())) {
+			//kill node for now
+			 
+			NodesToRemove.Add(Node);
+			
+			//NodeList.Remove(Node);
+			//Node->Kill();
+			if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("node killed"));
 		}
+	}
+
+	for (IOctreeInterface*& Node : NodesToRemove) {
+		NodeList.Remove(Node);
+		Node->Kill();
 	}
 
 }
 
+//FOR SOME REASON FOR UPDATING IN EDITOR TICK YOU HAVE TO PRESS RECOMPILE (LIVE CODING OFF) 3 TIMES FOR IT TO UPDATE: I AM NOT ONE TO QUESTION THE COMPILER GODS
+//may be just a problem with the unreal vesion? in game tick only updates with 3 compiles too i still think its cos im using editor tick
 void AOctreeMain::Tick(float DeltaTime)
 {
 	if (IsRunningGame()) {
 		Super::Tick(DeltaTime);
 	} 
 
-	//rebuildTree
+	RebuildTree();
 
+	//UE_LOG(LogTemp, Warning, TEXT("editor tick"));
 
-
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("tick"));
 
 #if WITH_EDITOR
 	DrawBox();
-
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("tick within WITH_EDITOR"));
 		if (subdevided) {
 			for (TUniquePtr<Octant>& octant : Octants) {
 				if (octant) octant->Tick(World, WorldLocation);
