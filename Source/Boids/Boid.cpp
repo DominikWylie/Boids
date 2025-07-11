@@ -23,7 +23,8 @@ void ABoid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetActorLocation(GetActorLocation() + (GetActorForwardVector() * Speed * DeltaTime));
+	//SetActorLocation(GetActorLocation() + (GetActorForwardVector() * Speed * DeltaTime));
+	SetActorLocation(GetActorLocation() + (GetActorUpVector() * Speed * DeltaTime));
 
 	FVector loc = GetActorLocation();
 

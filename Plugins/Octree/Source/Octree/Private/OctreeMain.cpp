@@ -169,8 +169,6 @@ void AOctreeMain::RebuildTree()
 			 
 			NodesToRemove.Add(Node);
 			
-			//NodeList.Remove(Node);
-			//Node->Kill();
 			if (GEngine)
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("node killed"));
 		}

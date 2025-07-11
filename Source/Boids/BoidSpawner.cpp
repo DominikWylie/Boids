@@ -23,7 +23,7 @@ void ABoidSpawner::BeginPlay()
 	World = GetWorld();
 
 	if (World) {
-		World->GetTimerManager().SetTimer(MyTimerHandle, this, &ABoidSpawner::Spawn, 1.0f, false);
+		World->GetTimerManager().SetTimer(MyTimerHandle, this, &ABoidSpawner::Spawn, 1.0f, true);
 	}
 
 	Octree = Cast<AOctreeMain>(UGameplayStatics::GetActorOfClass(World, AOctreeMain::StaticClass()));
@@ -38,15 +38,13 @@ void ABoidSpawner::Spawn()
 	}
 
 	if (World) {
-		AActor* SpawnedBoid = World->SpawnActor<ABoid>(BoidBlueprint, GetActorLocation(), FRotator::ZeroRotator);
+		FRotator BoidRotation;
 
-		//IOctreeInterface* BoidsInterface = Cast<IOctreeInterface>(SpawnedBoid);
-
-		//TScriptInterface<IOctreeInterface> scriptInterfce{  };
-
-		//scriptInterfce.SetInterface(BoidsInterface);
-
-		//OctreeMain->AddNode(scriptInterfce);
+		BoidRotation.Yaw = FMath::RandRange(-90, 90);
+		BoidRotation.Pitch = FMath::RandRange(-90, 90);
+		//roll doesnt need changed (when using moidels may want to anchor it somehow)
+		
+		AActor* SpawnedBoid = World->SpawnActor<ABoid>(BoidBlueprint, GetActorLocation(), BoidRotation);
 
 		IOctreeInterface* BoidsInterface = Cast<IOctreeInterface>(SpawnedBoid);
 
@@ -61,5 +59,4 @@ void ABoidSpawner::Spawn()
 void ABoidSpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }

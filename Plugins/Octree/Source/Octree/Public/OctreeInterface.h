@@ -21,6 +21,6 @@ class IOctreeInterface
 public:
 	virtual FVector GetPosition() const = 0;
 
-	//is killed wen leaving tree area (maybe change to teleport to othewr side? ideally the boids will turn around)
+	//Kill node is called (and removed from array) when it has left tree boundary
 	virtual void Kill() = 0;
 };
