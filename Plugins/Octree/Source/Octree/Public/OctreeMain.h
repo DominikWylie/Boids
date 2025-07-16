@@ -58,6 +58,8 @@ private:
 
 	TUniquePtr<Octant> Octants[8];
 
+	uint16 MaxNodesPerOctant;
+
 	bool subdevided = false;
 
 #if WITH_EDITOR

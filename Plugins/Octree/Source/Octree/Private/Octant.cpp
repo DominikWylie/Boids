@@ -4,9 +4,20 @@
 
 #include "DrawDebugHelpers.h"
 
-Octant::Octant(FVector FCorner, FVector SCorner) : 
-	FirstCorner(FCorner), 
-	SecondCorner(SCorner)
+#include "OctreeInterface.h"
+
+Octant::Octant(
+	const FVector& FCorner, 
+	const FVector& SCorner, 
+	const FVector& WorldLoc, 
+	const TArray<IOctreeInterface*>& NList, 
+	const uint16& MaxNodesPerOct) 
+	:
+	FirstCorner(FCorner),
+	SecondCorner(SCorner),
+	WorldLocation(WorldLoc),
+	NodeList(NList),
+	MaxNodesPerOctant(MaxNodesPerOct)
 {
 }
 
@@ -18,6 +29,29 @@ void Octant::Tick(UWorld* World, FVector WorldLocation)
 {
 	DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, FColor::Red);
 
+	TArray<IOctreeInterface*> NodesToRemove;
+
+	for (IOctreeInterface*& Node : NodeList) {
+
+		//check if all nodes are inside
+		if (!IsWithinArea(Node->GetPosition())) {
+			//kill node for now
+
+			NodesToRemove.Add(Node);
+		}
+	}
+
+	for (IOctreeInterface*& Node : NodesToRemove) {
+		NodeList.Remove(Node);
+		Node->Kill();
+	}
+
+	//if exeeds max nodes subdivide and pass nodes to them to do thier thing
+
+	if (NodeList.Num() > MaxNodesPerOctant) {
+		SubdivideTree();
+	}
+
 	if (subdevided) {
 		for (TUniquePtr<Octant>& octant : Octants) {
 			octant->Tick(World, WorldLocation);
@@ -27,9 +61,9 @@ void Octant::Tick(UWorld* World, FVector WorldLocation)
 
 void Octant::Subdivide()
 {
-	if (subdevided) {
-		return;
-	}
+	//if (subdevided) {
+	//	return;
+	//}
 
 	FVector HalfDistance = (SecondCorner - FirstCorner) / 2;
 
@@ -68,5 +102,25 @@ void Octant::Subdivide()
 	FVector Octant8FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z + HalfDistance.Z);
 	Octants[7] = MakeUnique<Octant>(Octant8FirstCorner, Octant8FirstCorner + HalfDistance);
 
-	subdevided = true;
+	//subdevided = true;
+}
+
+bool Octant::IsWithinArea(const FVector& Location)
+{
+	FVector FirstWorldCorner = FirstCorner + WorldLocation;
+	FVector SecondWorldCorner = SecondCorner + WorldLocation;
+
+	if (Location.X > FirstWorldCorner.X ||
+		Location.Y > FirstWorldCorner.Y ||
+		Location.Z > FirstWorldCorner.Z) {
+		return false;
+	}
+
+	if (Location.X < SecondWorldCorner.X ||
+		Location.Y < SecondWorldCorner.Y ||
+		Location.Z < SecondWorldCorner.Z) {
+		return false;
+	}
+
+	return true;
 }

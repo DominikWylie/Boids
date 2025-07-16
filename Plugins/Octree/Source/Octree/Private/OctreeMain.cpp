@@ -35,7 +35,6 @@ void AOctreeMain::AddNode(IOctreeInterface* Node)
 
 	NodeList.Add(Node);
 
-
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("node Added"));
 
@@ -79,49 +78,84 @@ void AOctreeMain::SubdivideTree()
 
 	FVector HalfDistance = (SecondCorner - FirstCorner) / 2;
 
-	FVector makeItClearthe4ththisbetemp = FVector(50.f, 50.f, 50.f);
-
 	//top front left
-	Octants[0] = MakeUnique<Octant>(FirstCorner, FirstCorner + HalfDistance);
+	Octants[0] = MakeUnique<Octant>(
+		FirstCorner, 
+		FirstCorner + HalfDistance,
+		WorldLocation,
+		NodeList,
+		MaxNodesPerOctant
+		);
 
 	//top front right
 	FVector Octant2FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y, FirstCorner.Z);
-	Octants[1] = MakeUnique<Octant>(Octant2FirstCorner, Octant2FirstCorner + HalfDistance);
+	Octants[1] = MakeUnique<Octant>(
+		Octant2FirstCorner, 
+		Octant2FirstCorner + HalfDistance,
+		WorldLocation,
+		NodeList,
+		MaxNodesPerOctant);
 
 	//top back left
 	FVector Octant3FirstCorner = FVector(FirstCorner.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z);
-	Octants[2] = MakeUnique<Octant>(Octant3FirstCorner, Octant3FirstCorner + HalfDistance);
+	Octants[2] = MakeUnique<Octant>(
+		Octant3FirstCorner, 
+		Octant3FirstCorner + HalfDistance, 
+		WorldLocation,
+		NodeList,
+		MaxNodesPerOctant);
 
 	//top back right
 	FVector Octant4FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z);
-	Octants[3] = MakeUnique<Octant>(Octant4FirstCorner, Octant4FirstCorner + HalfDistance);
-
-
+	Octants[3] = MakeUnique<Octant>(
+		Octant4FirstCorner, 
+		Octant4FirstCorner + HalfDistance,
+		WorldLocation,
+		NodeList,
+		MaxNodesPerOctant);
 
 	//bottom front left
 	FVector Octant5FirstCorner = FVector(FirstCorner.X, FirstCorner.Y, FirstCorner.Z + HalfDistance.Z);
-	Octants[4] = MakeUnique<Octant>(Octant5FirstCorner, Octant5FirstCorner + HalfDistance);
+	Octants[4] = MakeUnique<Octant>(
+		Octant5FirstCorner, 
+		Octant5FirstCorner + HalfDistance,
+		WorldLocation,
+		NodeList,
+		MaxNodesPerOctant);
 
 	//bottom front right
 	FVector Octant6FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y, FirstCorner.Z + HalfDistance.Z);
-	Octants[5] = MakeUnique<Octant>(Octant6FirstCorner, Octant6FirstCorner + HalfDistance);
+	Octants[5] = MakeUnique<Octant>(
+		Octant6FirstCorner, 
+		Octant6FirstCorner + HalfDistance,
+		WorldLocation,
+		NodeList,
+		MaxNodesPerOctant);
 
 	//bottom back left
 	FVector Octant7FirstCorner = FVector(FirstCorner.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z + HalfDistance.Z);
-	Octants[6] = MakeUnique<Octant>(Octant7FirstCorner, Octant7FirstCorner + HalfDistance);
+	Octants[6] = MakeUnique<Octant>(
+		Octant7FirstCorner, 
+		Octant7FirstCorner + HalfDistance,
+		WorldLocation,
+		NodeList,
+		MaxNodesPerOctant);
 
 	//bottom back right
 	FVector Octant8FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z + HalfDistance.Z);
-	Octants[7] = MakeUnique<Octant>(Octant8FirstCorner, Octant8FirstCorner + HalfDistance);
-
-	//Octants[7] = MakeUnique<Octant>(Octant7FirstCorner + makeItClearthe4ththisbetemp, (Octant7FirstCorner + HalfDistance) + makeItClearthe4ththisbetemp);
+	Octants[7] = MakeUnique<Octant>(
+		Octant8FirstCorner, 
+		Octant8FirstCorner + HalfDistance,
+		WorldLocation,
+		NodeList,
+		MaxNodesPerOctant);
 
 
 	//for (TUniquePtr<Octant>& octant : Octants) {
 	//	octant->Subdivide();
 	//}
 
-	subdevided = true;
+	//subdevided = true;
 
 }
 
@@ -147,36 +181,28 @@ bool AOctreeMain::IsWithinArea(const FVector& Location)
 
 void AOctreeMain::RebuildTree()
 {
-	//all (boids) should be within the main at all times, if it leaves, have a "left" function that is called to the node
-
-	//uint8 NodeCount = 0;
-
-
-	//if (GEngine)
-	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("node rebuild"));
 
 	TArray<IOctreeInterface*> NodesToRemove;
 
 	for (IOctreeInterface*& Node : NodeList) {
 
-		FVector loc = FirstCorner + GetActorLocation();
-
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(2, 15.0f, FColor::Blue, FString::Printf(TEXT("X %f, Y %f, Z %f, "), loc.X, loc.Y, loc.Z));
-
+		//check if all nodes are inside
 		if (!IsWithinArea(Node->GetPosition())) {
 			//kill node for now
 			 
 			NodesToRemove.Add(Node);
-			
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("node killed"));
 		}
 	}
 
 	for (IOctreeInterface*& Node : NodesToRemove) {
 		NodeList.Remove(Node);
 		Node->Kill();
+	}
+
+	//if exeeds max nodes subdivide and pass nodes to them to do thier thing
+
+	if (NodeList.Num() > MaxNodesPerOctant) {
+		SubdivideTree();
 	}
 
 }
@@ -187,7 +213,7 @@ void AOctreeMain::Tick(float DeltaTime)
 {
 	if (IsRunningGame()) {
 		Super::Tick(DeltaTime);
-	} 
+	}
 
 	RebuildTree();
 
@@ -241,4 +267,3 @@ void AOctreeMain::BeginPlay()
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped z"));
 	}
 }
-
