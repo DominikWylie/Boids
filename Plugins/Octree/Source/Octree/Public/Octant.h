@@ -17,18 +17,21 @@ public:
 		const FVector& SecondCorner, 
 		const FVector& WorldLocation, 
 		const TArray<IOctreeInterface*>& NodeList, 
-		const uint16& MaxNodesPerOctant
+		const uint16& MaxNodesPerOctant,
+		UWorld* World
 	);
 
 	~Octant();
 
-	void Tick(UWorld* World, FVector WorldLocation);
+	void Tick(/*UWorld* World*/);
 
-	void Subdivide();
+	void SubdivideTree();
 
 private:
 
 	bool IsWithinArea(const FVector& Location);
+
+	UWorld* World;
 
 	TArray<IOctreeInterface*> NodeList;
 

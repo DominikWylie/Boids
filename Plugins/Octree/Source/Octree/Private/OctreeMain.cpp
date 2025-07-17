@@ -7,12 +7,10 @@
 // Sets default values
 AOctreeMain::AOctreeMain()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
 	PrimaryActorTick.bStartWithTickEnabled = true;
+	PrimaryActorTick.bCanEverTick = true;
 
 	World = GetWorld();
 
@@ -59,8 +57,8 @@ void AOctreeMain::OnConstruction(const FTransform& Transform)
 void AOctreeMain::DrawBox()
 {
 	if (!bBoundingBoxVisibiliy) {
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("invisible"));
+		//if (GEngine)
+		//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("invisible"));
 		return;
 	}
 
@@ -84,8 +82,9 @@ void AOctreeMain::SubdivideTree()
 		FirstCorner + HalfDistance,
 		WorldLocation,
 		NodeList,
-		MaxNodesPerOctant
-		);
+		MaxNodesPerOctant,
+		World
+	);
 
 	//top front right
 	FVector Octant2FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y, FirstCorner.Z);
@@ -94,7 +93,9 @@ void AOctreeMain::SubdivideTree()
 		Octant2FirstCorner + HalfDistance,
 		WorldLocation,
 		NodeList,
-		MaxNodesPerOctant);
+		MaxNodesPerOctant,
+		World
+	);
 
 	//top back left
 	FVector Octant3FirstCorner = FVector(FirstCorner.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z);
@@ -103,7 +104,9 @@ void AOctreeMain::SubdivideTree()
 		Octant3FirstCorner + HalfDistance, 
 		WorldLocation,
 		NodeList,
-		MaxNodesPerOctant);
+		MaxNodesPerOctant,
+		World
+	);
 
 	//top back right
 	FVector Octant4FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z);
@@ -112,7 +115,9 @@ void AOctreeMain::SubdivideTree()
 		Octant4FirstCorner + HalfDistance,
 		WorldLocation,
 		NodeList,
-		MaxNodesPerOctant);
+		MaxNodesPerOctant,
+		World
+	);
 
 	//bottom front left
 	FVector Octant5FirstCorner = FVector(FirstCorner.X, FirstCorner.Y, FirstCorner.Z + HalfDistance.Z);
@@ -121,7 +126,9 @@ void AOctreeMain::SubdivideTree()
 		Octant5FirstCorner + HalfDistance,
 		WorldLocation,
 		NodeList,
-		MaxNodesPerOctant);
+		MaxNodesPerOctant,
+		World
+	);
 
 	//bottom front right
 	FVector Octant6FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y, FirstCorner.Z + HalfDistance.Z);
@@ -130,7 +137,9 @@ void AOctreeMain::SubdivideTree()
 		Octant6FirstCorner + HalfDistance,
 		WorldLocation,
 		NodeList,
-		MaxNodesPerOctant);
+		MaxNodesPerOctant,
+		World
+	);
 
 	//bottom back left
 	FVector Octant7FirstCorner = FVector(FirstCorner.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z + HalfDistance.Z);
@@ -139,7 +148,9 @@ void AOctreeMain::SubdivideTree()
 		Octant7FirstCorner + HalfDistance,
 		WorldLocation,
 		NodeList,
-		MaxNodesPerOctant);
+		MaxNodesPerOctant,
+		World
+	);
 
 	//bottom back right
 	FVector Octant8FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z + HalfDistance.Z);
@@ -148,14 +159,18 @@ void AOctreeMain::SubdivideTree()
 		Octant8FirstCorner + HalfDistance,
 		WorldLocation,
 		NodeList,
-		MaxNodesPerOctant);
+		MaxNodesPerOctant,
+		World
+	);
 
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("subdigvidfe"));
 
 	//for (TUniquePtr<Octant>& octant : Octants) {
 	//	octant->Subdivide();
 	//}
 
-	//subdevided = true;
+	subdevided = true;
 
 }
 
@@ -201,9 +216,12 @@ void AOctreeMain::RebuildTree()
 
 	//if exeeds max nodes subdivide and pass nodes to them to do thier thing
 
-	if (NodeList.Num() > MaxNodesPerOctant) {
-		SubdivideTree();
-	}
+	//if (NodeList.Num() > MaxNodesPerOctant) {
+	//	SubdivideTree();
+	//}
+
+	//to test that it subdivides
+	SubdivideTree();
 
 }
 
@@ -211,16 +229,23 @@ void AOctreeMain::RebuildTree()
 //may be just a problem with the unreal vesion? in game tick only updates with 3 compiles too i still think its cos im using editor tick
 void AOctreeMain::Tick(float DeltaTime)
 {
-	if (IsRunningGame()) {
+	if (GetWorld() && GetWorld()->IsGameWorld()) {
 		Super::Tick(DeltaTime);
-	}
 
-	RebuildTree();
+		if (NodeList.Num() > MaxNodesPerOctant) {
+			RebuildTree();
+
+			if (GEngine)
+				GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Yellow, TEXT("subdivided in main"));
+
+			if (GEngine)
+				GEngine->AddOnScreenDebugMessage(2, 15.0f, FColor::Yellow, FString::Printf(TEXT("node amount: %d, MaxNodesPerOctant %d"), NodeList.Num(), MaxNodesPerOctant));
+		}
+	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("editor tick"));
 
-	//if (GEngine)
-	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("tick"));
+
 
 #if WITH_EDITOR
 	DrawBox();
@@ -228,7 +253,7 @@ void AOctreeMain::Tick(float DeltaTime)
 	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("tick within WITH_EDITOR"));
 		if (subdevided) {
 			for (TUniquePtr<Octant>& octant : Octants) {
-				if (octant) octant->Tick(World, WorldLocation);
+				if (octant) octant->Tick();
 			}
 		}
 #endif

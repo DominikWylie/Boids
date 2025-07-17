@@ -30,7 +30,7 @@ public:
 	bool bBoundingBoxVisibiliy = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	uint8 NodesPerOctant = 1;
+	uint8 MaxNodesPerOctant = 1;
 
 	void AddNode(IOctreeInterface* Node);
 
@@ -57,8 +57,6 @@ private:
 	TArray<IOctreeInterface*> NodeList;
 
 	TUniquePtr<Octant> Octants[8];
-
-	uint16 MaxNodesPerOctant;
 
 	bool subdevided = false;
 
