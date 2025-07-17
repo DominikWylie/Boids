@@ -11,23 +11,28 @@ Octant::Octant(
 	const FVector& SCorner, 
 	const FVector& WorldLoc, 
 	const TArray<IOctreeInterface*>& NList, 
-	const uint16& MaxNodesPerOct,
-	UWorld* Wrld)
+	const uint16 MaxNodesPerOct,
+	UWorld* Wrld, 
+	const bool bBBoxVisibiliy)
 	:
 	FirstCorner(FCorner),
 	SecondCorner(SCorner),
 	WorldLocation(WorldLoc),
 	NodeList(NList),
 	MaxNodesPerOctant(MaxNodesPerOct),
-	World(Wrld)
+	World(Wrld),
+	bBoundingBoxVisibiliy(bBBoxVisibiliy)
 {
-
-	DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, FColor::Red);
+#if WITH_EDITOR
+	if (bBoundingBoxVisibiliy) {
+		DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, FColor::Red);
+	}
+#endif
 
 	//if exeeds max nodes subdivide and pass nodes to them to do thier thing
 
 	if (NodeList.Num() > MaxNodesPerOctant) {
-		//SubdivideTree();
+		SubdivideTree();
 	}
 
 }
@@ -36,39 +41,39 @@ Octant::~Octant()
 {
 }
 
-void Octant::Tick(/*UWorld* World*/)
-{
-	//DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, FColor::Red);
-
-	//TArray<IOctreeInterface*> NodesToRemove;
-
-	//for (IOctreeInterface*& Node : NodeList) {
-
-	//	//check if all nodes are inside
-	//	if (!IsWithinArea(Node->GetPosition())) {
-	//		//kill node for now
-
-	//		NodesToRemove.Add(Node);
-	//	}
-	//}
-
-	//for (IOctreeInterface*& Node : NodesToRemove) {
-	//	NodeList.Remove(Node);
-	//	Node->Kill();
-	//}
-
-	////if exeeds max nodes subdivide and pass nodes to them to do thier thing
-
-	//if (NodeList.Num() > MaxNodesPerOctant) {
-	//	SubdivideTree();
-	//}
-
-	////if (subdevided) {
-	////	for (TUniquePtr<Octant>& octant : Octants) {
-	////		octant->Tick(World);
-	////	}
-	////}
-}
+//void Octant::Tick(/*UWorld* World*/)
+//{
+//	//DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, FColor::Red);
+//
+//	//TArray<IOctreeInterface*> NodesToRemove;
+//
+//	//for (IOctreeInterface*& Node : NodeList) {
+//
+//	//	//check if all nodes are inside
+//	//	if (!IsWithinArea(Node->GetPosition())) {
+//	//		//kill node for now
+//
+//	//		NodesToRemove.Add(Node);
+//	//	}
+//	//}
+//
+//	//for (IOctreeInterface*& Node : NodesToRemove) {
+//	//	NodeList.Remove(Node);
+//	//	Node->Kill();
+//	//}
+//
+//	////if exeeds max nodes subdivide and pass nodes to them to do thier thing
+//
+//	//if (NodeList.Num() > MaxNodesPerOctant) {
+//	//	SubdivideTree();
+//	//}
+//
+//	////if (subdevided) {
+//	////	for (TUniquePtr<Octant>& octant : Octants) {
+//	////		octant->Tick(World);
+//	////	}
+//	////}
+//}
 
 void Octant::SubdivideTree()
 {
@@ -76,133 +81,236 @@ void Octant::SubdivideTree()
 	//	return;
 	//}
 
-
 	FVector HalfDistance = (SecondCorner - FirstCorner) / 2;
 
+	TArray<IOctreeInterface*> TempNodesList = NodeList;
+	//origonaly was nodelist just passed in (if broke)
+
 	//top front left
+	TArray<IOctreeInterface*> TopFrontLeftNodes;
+
+	SplitNodeList(TopFrontLeftNodes, TempNodesList, FirstCorner, FirstCorner + HalfDistance);
+
 	Octants[0] = MakeUnique<Octant>(
 		FirstCorner,
 		FirstCorner + HalfDistance,
 		WorldLocation,
-		NodeList,
+		TopFrontLeftNodes,
 		MaxNodesPerOctant,
-		World
+		World,
+		bBoundingBoxVisibiliy
 	);
 
 	//top front right
 	FVector Octant2FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y, FirstCorner.Z);
+
+	TArray<IOctreeInterface*> TopFrontRightNodes;
+
+	SplitNodeList(TopFrontRightNodes, TempNodesList, Octant2FirstCorner, Octant2FirstCorner + HalfDistance);
+
 	Octants[1] = MakeUnique<Octant>(
 		Octant2FirstCorner,
 		Octant2FirstCorner + HalfDistance,
 		WorldLocation,
-		NodeList,
+		TopFrontRightNodes,
 		MaxNodesPerOctant,
-		World
+		World,
+		bBoundingBoxVisibiliy
 	);
 
 	//top back left
 	FVector Octant3FirstCorner = FVector(FirstCorner.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z);
+
+	TArray<IOctreeInterface*> TopBackLeftNodes;
+
+	SplitNodeList(TopBackLeftNodes, TempNodesList, Octant3FirstCorner, Octant3FirstCorner + HalfDistance);
+
 	Octants[2] = MakeUnique<Octant>(
 		Octant3FirstCorner,
 		Octant3FirstCorner + HalfDistance,
 		WorldLocation,
-		NodeList,
+		TopBackLeftNodes,
 		MaxNodesPerOctant,
-		World
+		World,
+		bBoundingBoxVisibiliy
 	);
 
 	//top back right
 	FVector Octant4FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z);
+
+	TArray<IOctreeInterface*> TopBackRightNodes;
+
+	SplitNodeList(TopBackRightNodes, TempNodesList, Octant4FirstCorner, Octant4FirstCorner + HalfDistance);
+
 	Octants[3] = MakeUnique<Octant>(
 		Octant4FirstCorner,
 		Octant4FirstCorner + HalfDistance,
 		WorldLocation,
-		NodeList,
+		TopBackRightNodes,
 		MaxNodesPerOctant,
-		World
+		World,
+		bBoundingBoxVisibiliy
 	);
 
 	//bottom front left
 	FVector Octant5FirstCorner = FVector(FirstCorner.X, FirstCorner.Y, FirstCorner.Z + HalfDistance.Z);
+
+	TArray<IOctreeInterface*> BottomFrontLeftNodes;
+
+	SplitNodeList(BottomFrontLeftNodes, TempNodesList, Octant5FirstCorner, Octant5FirstCorner + HalfDistance);
+
 	Octants[4] = MakeUnique<Octant>(
 		Octant5FirstCorner,
 		Octant5FirstCorner + HalfDistance,
 		WorldLocation,
-		NodeList,
+		BottomFrontLeftNodes,
 		MaxNodesPerOctant,
-		World
+		World,
+		bBoundingBoxVisibiliy
 	);
 
 	//bottom front right
 	FVector Octant6FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y, FirstCorner.Z + HalfDistance.Z);
+
+	TArray<IOctreeInterface*> BottomFrontRightNodes;
+
+	SplitNodeList(BottomFrontRightNodes, TempNodesList, Octant6FirstCorner, Octant6FirstCorner + HalfDistance);
+
 	Octants[5] = MakeUnique<Octant>(
 		Octant6FirstCorner,
 		Octant6FirstCorner + HalfDistance,
 		WorldLocation,
-		NodeList,
+		BottomFrontRightNodes,
 		MaxNodesPerOctant,
-		World
+		World,
+		bBoundingBoxVisibiliy
 	);
 
 	//bottom back left
 	FVector Octant7FirstCorner = FVector(FirstCorner.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z + HalfDistance.Z);
+
+	TArray<IOctreeInterface*> BottomBackLeftNodes;
+
+	SplitNodeList(BottomBackLeftNodes, TempNodesList, Octant7FirstCorner, Octant7FirstCorner + HalfDistance);
+
 	Octants[6] = MakeUnique<Octant>(
 		Octant7FirstCorner,
 		Octant7FirstCorner + HalfDistance,
 		WorldLocation,
-		NodeList,
+		BottomBackLeftNodes,
 		MaxNodesPerOctant,
-		World
+		World,
+		bBoundingBoxVisibiliy
 	);
 
 	//bottom back right
 	FVector Octant8FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z + HalfDistance.Z);
+
+	TArray<IOctreeInterface*> BottomBackRightNodes;
+
+	SplitNodeList(BottomBackRightNodes, TempNodesList, Octant8FirstCorner, Octant8FirstCorner + HalfDistance);
+
 	Octants[7] = MakeUnique<Octant>(
 		Octant8FirstCorner,
 		Octant8FirstCorner + HalfDistance,
 		WorldLocation,
-		NodeList,
+		BottomBackRightNodes,
 		MaxNodesPerOctant,
-		World
+		World,
+		bBoundingBoxVisibiliy
 	);
+
+	subdevided = true;
+
 
 	//FVector HalfDistance = (SecondCorner - FirstCorner) / 2;
 
-	////FVector makeItClearthe4ththisbetemp = FVector(20.f, 20.f, 20.f);
-
 	////top front left
-	//Octants[0] = MakeUnique<Octant>(FirstCorner, FirstCorner + HalfDistance);
+	//Octants[0] = MakeUnique<Octant>(
+	//	FirstCorner,
+	//	FirstCorner + HalfDistance,
+	//	WorldLocation,
+	//	NodeList,
+	//	MaxNodesPerOctant,
+	//	World
+	//);
 
 	////top front right
 	//FVector Octant2FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y, FirstCorner.Z);
-	//Octants[1] = MakeUnique<Octant>(Octant2FirstCorner, Octant2FirstCorner + HalfDistance);
+	//Octants[1] = MakeUnique<Octant>(
+	//	Octant2FirstCorner,
+	//	Octant2FirstCorner + HalfDistance,
+	//	WorldLocation,
+	//	NodeList,
+	//	MaxNodesPerOctant,
+	//	World
+	//);
 
 	////top back left
 	//FVector Octant3FirstCorner = FVector(FirstCorner.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z);
-	//Octants[2] = MakeUnique<Octant>(Octant3FirstCorner, Octant3FirstCorner + HalfDistance);
+	//Octants[2] = MakeUnique<Octant>(
+	//	Octant3FirstCorner,
+	//	Octant3FirstCorner + HalfDistance,
+	//	WorldLocation,
+	//	NodeList,
+	//	MaxNodesPerOctant,
+	//	World
+	//);
 
 	////top back right
 	//FVector Octant4FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z);
-	//Octants[3] = MakeUnique<Octant>(Octant4FirstCorner, Octant4FirstCorner + HalfDistance);
-
-
+	//Octants[3] = MakeUnique<Octant>(
+	//	Octant4FirstCorner,
+	//	Octant4FirstCorner + HalfDistance,
+	//	WorldLocation,
+	//	NodeList,
+	//	MaxNodesPerOctant,
+	//	World
+	//);
 
 	////bottom front left
 	//FVector Octant5FirstCorner = FVector(FirstCorner.X, FirstCorner.Y, FirstCorner.Z + HalfDistance.Z);
-	//Octants[4] = MakeUnique<Octant>(Octant5FirstCorner, Octant5FirstCorner + HalfDistance);
+	//Octants[4] = MakeUnique<Octant>(
+	//	Octant5FirstCorner,
+	//	Octant5FirstCorner + HalfDistance,
+	//	WorldLocation,
+	//	NodeList,
+	//	MaxNodesPerOctant,
+	//	World
+	//);
 
 	////bottom front right
 	//FVector Octant6FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y, FirstCorner.Z + HalfDistance.Z);
-	//Octants[5] = MakeUnique<Octant>(Octant6FirstCorner, Octant6FirstCorner + HalfDistance);
+	//Octants[5] = MakeUnique<Octant>(
+	//	Octant6FirstCorner,
+	//	Octant6FirstCorner + HalfDistance,
+	//	WorldLocation,
+	//	NodeList,
+	//	MaxNodesPerOctant,
+	//	World
+	//);
 
 	////bottom back left
 	//FVector Octant7FirstCorner = FVector(FirstCorner.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z + HalfDistance.Z);
-	//Octants[6] = MakeUnique<Octant>(Octant7FirstCorner, Octant7FirstCorner + HalfDistance);
+	//Octants[6] = MakeUnique<Octant>(
+	//	Octant7FirstCorner,
+	//	Octant7FirstCorner + HalfDistance,
+	//	WorldLocation,
+	//	NodeList,
+	//	MaxNodesPerOctant,
+	//	World
+	//);
 
 	////bottom back right
 	//FVector Octant8FirstCorner = FVector(FirstCorner.X + HalfDistance.X, FirstCorner.Y + HalfDistance.Y, FirstCorner.Z + HalfDistance.Z);
-	//Octants[7] = MakeUnique<Octant>(Octant8FirstCorner, Octant8FirstCorner + HalfDistance);
-
+	//Octants[7] = MakeUnique<Octant>(
+	//	Octant8FirstCorner,
+	//	Octant8FirstCorner + HalfDistance,
+	//	WorldLocation,
+	//	NodeList,
+	//	MaxNodesPerOctant,
+	//	World
+	//);
 	//subdevided = true;
 }
 
@@ -224,4 +332,42 @@ bool Octant::IsWithinArea(const FVector& Location)
 	}
 
 	return true;
+}
+
+bool Octant::IsWithinArea(const FVector& Location, const FVector& FCorner, const FVector& SCorner)
+{
+	FVector FirstWorldCorner = FCorner + WorldLocation;
+	FVector SecondWorldCorner = SCorner + WorldLocation;
+
+	if (Location.X > FirstWorldCorner.X ||
+		Location.Y > FirstWorldCorner.Y ||
+		Location.Z > FirstWorldCorner.Z) {
+		return false;
+	}
+
+	if (Location.X < SecondWorldCorner.X ||
+		Location.Y < SecondWorldCorner.Y ||
+		Location.Z < SecondWorldCorner.Z) {
+		return false;
+	}
+
+	return true;
+}
+
+void Octant::SplitNodeList(TArray<IOctreeInterface*>& OctantNodeList, TArray<IOctreeInterface*>& TempNodeList, const FVector& FCorner, const FVector& SCorner)
+{
+
+	TArray<IOctreeInterface*> TempNodeListToRemove;
+
+	//couldve been rangebased but pointless to change
+	for (int i = 0; i < TempNodeList.Num(); i++) {
+		if (IsWithinArea(TempNodeList[i]->GetPosition(), FCorner, SCorner)) {
+			OctantNodeList.Add(TempNodeList[i]);
+			TempNodeListToRemove.Add(TempNodeList[i]);
+		}
+	}
+
+	for (IOctreeInterface*& node : TempNodeListToRemove) {
+		TempNodeList.Remove(node);
+	}
 }

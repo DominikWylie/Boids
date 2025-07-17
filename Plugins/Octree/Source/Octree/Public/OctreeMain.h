@@ -48,6 +48,9 @@ private:
 	void SubdivideTree();
 
 	bool IsWithinArea(const FVector& Location);
+	bool IsWithinArea(const FVector& Location, const FVector& FirstCorner, const FVector& SecondCorner);
+
+	void SplitNodeList(TArray<IOctreeInterface*>& OctantNodeList, TArray<IOctreeInterface*>& TempNodeList, const FVector& FirstCorner, const FVector& SecondCorner);
 
 	void RebuildTree();
 
