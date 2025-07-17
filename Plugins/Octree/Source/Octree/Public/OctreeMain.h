@@ -34,6 +34,8 @@ public:
 
 	void AddNode(IOctreeInterface* Node);
 
+	uint32 GetNodeNum() { return NodeList.Num(); }
+
 protected:
 
 	virtual void OnConstruction(const FTransform& Transform) override;

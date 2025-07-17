@@ -23,7 +23,7 @@ void ABoidSpawner::BeginPlay()
 	World = GetWorld();
 
 	if (World) {
-		World->GetTimerManager().SetTimer(MyTimerHandle, this, &ABoidSpawner::Spawn, 1.0f, true);
+		World->GetTimerManager().SetTimer(MyTimerHandle, this, &ABoidSpawner::Spawn, 0.1f, true);
 	}
 
 	Octree = Cast<AOctreeMain>(UGameplayStatics::GetActorOfClass(World, AOctreeMain::StaticClass()));
@@ -36,6 +36,11 @@ void ABoidSpawner::Spawn()
 			TEXT(__FILE__), __LINE__, TEXT(__FUNCTION__));
 		return;
 	}
+	
+	//ill keep the octree getter but this was made just to avoid overloading the machine
+	//if (Octree->GetNodeNum() > 100) {
+	//	return;
+	//}
 
 	if (World) {
 		FRotator BoidRotation;

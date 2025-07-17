@@ -28,13 +28,14 @@ void AOctreeMain::AddNode(IOctreeInterface* Node)
 	if (!IsWithinArea(Node->GetPosition())) {
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("node out of area"));
+		Node->Kill();
 		return;
 	}
 
 	NodeList.Add(Node);
 
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("node Added"));
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("node Added"));
 
 	//check the max number of nodes
 
@@ -333,6 +334,8 @@ void AOctreeMain::Tick(float DeltaTime)
 
 void AOctreeMain::BeginPlay()
 {
+	SetActorTickEnabled(true);
+
 	WorldLocation = GetActorLocation();
 
 	World = GetWorld();
