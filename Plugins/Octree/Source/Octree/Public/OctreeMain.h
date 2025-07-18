@@ -11,6 +11,14 @@
 
 class IOctreeInterface;
 
+//this was giving the user the choice to update manually but im gona keep it simple for now
+//UENUM(BlueprintType)
+//enum class EUdateMode : uint8 
+//{
+//	PerTick UMETA(DisplayName = "Update automticly evrry tick"),
+//	Manual 	UMETA(DisplayName = "Update Manually using "),
+//};
+
 UCLASS()
 class OCTREE_API AOctreeMain : public AActor
 {
@@ -35,6 +43,11 @@ public:
 	void AddNode(IOctreeInterface* Node);
 
 	uint32 GetNodeNum() { return NodeList.Num(); }
+
+	//overload if other shapes needed
+	TArray<IOctreeInterface*> NodeQuery(const FVector& Centre, float Extent);
+
+	void pauseNodes();
 
 protected:
 

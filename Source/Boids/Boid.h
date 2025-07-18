@@ -19,7 +19,7 @@ public:
 	ABoid();
 
 	UPROPERTY(EditAnywhere)
-	float Speed = 250.f;
+	float Speed = 700.f;
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,5 +32,15 @@ public:
 	FVector GetPosition() const override;
 
 	void Kill() override;
+
+	void TempPause() override;
+
+	void colourin() override;
+
+	bool move = true;
+
+	int32 NodeMatchIDTemp = 0;
+
+	int32 id() override;
 
 };

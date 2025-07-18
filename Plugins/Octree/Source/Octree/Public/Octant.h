@@ -24,6 +24,8 @@ public:
 
 	~Octant();
 
+	TArray<IOctreeInterface*> NodeQuery(const FVector& Centre, float Extent);
+
 	//void Tick(/*UWorld* World*/);
 
 private:
@@ -51,4 +53,6 @@ private:
 	bool subdevided = false;
 
 	TUniquePtr<Octant> Octants[8];
+
+	FColor BoxColour = FColor::Red;
 };

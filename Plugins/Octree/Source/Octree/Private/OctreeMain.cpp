@@ -21,6 +21,7 @@ AOctreeMain::AOctreeMain()
 
 void AOctreeMain::AddNode(IOctreeInterface* Node)
 {
+
 	//check if node is in area, if not - ignore.
 
 	//FVector NodePosition = Node->GetPosition();
@@ -249,11 +250,11 @@ bool AOctreeMain::IsWithinArea(const FVector& Location, const FVector& FCorner, 
 
 void AOctreeMain::SplitNodeList(TArray<IOctreeInterface*>& OctantNodeList, TArray<IOctreeInterface*>& TempNodeList, const FVector& FCorner, const FVector& SCorner)
 {
-	
+
 	TArray<IOctreeInterface*> TempNodeListToRemove;
 
 	//couldve been rangebased but pointless to change
-	for (int i = 0; i < TempNodeList.Num(); i++) {
+	for (int32 i = 0; i < TempNodeList.Num(); i++) {
 		if (IsWithinArea(TempNodeList[i]->GetPosition(), FCorner, SCorner)) {
 			OctantNodeList.Add(TempNodeList[i]);
 			TempNodeListToRemove.Add(TempNodeList[i]);
@@ -308,11 +309,11 @@ void AOctreeMain::Tick(float DeltaTime)
 		Super::Tick(DeltaTime);
 		RebuildTree();
 
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Yellow, TEXT("subdivided in main"));
+		//if (GEngine)
+		//	GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Yellow, TEXT("subdivided in main"));
 
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(2, 15.0f, FColor::Yellow, FString::Printf(TEXT("node amount: %d, MaxNodesPerOctant %d"), NodeList.Num(), MaxNodesPerOctant));
+		//if (GEngine)
+		//	GEngine->AddOnScreenDebugMessage(2, 15.0f, FColor::Yellow, FString::Printf(TEXT("node amount: %d, MaxNodesPerOctant %d"), NodeList.Num(), MaxNodesPerOctant));
 	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("editor tick"));
@@ -345,8 +346,8 @@ void AOctreeMain::BeginPlay()
 		FirstCorner.X = SecondCorner.X;
 		SecondCorner.X = temp;
 
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped x"));
+		//if (GEngine)
+		//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped x"));
 	}
 
 	if (FirstCorner.Y < SecondCorner.Y) {
@@ -354,8 +355,8 @@ void AOctreeMain::BeginPlay()
 		FirstCorner.Y = SecondCorner.Y;
 		SecondCorner.Y = temp;
 
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped y"));
+		//if (GEngine)
+		//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped y"));
 	}
 
 	if (FirstCorner.Z < SecondCorner.Z) {
@@ -363,7 +364,50 @@ void AOctreeMain::BeginPlay()
 		FirstCorner.Z = SecondCorner.Z;
 		SecondCorner.Z = temp;
 
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped z"));
+		//if (GEngine)
+		//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped z"));
+	}
+}
+
+TArray<IOctreeInterface*> AOctreeMain::NodeQuery(const FVector& Centre, float Extent)
+{
+	//second is min, first is max
+
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("query hit"));
+
+	//sphere aabb collision detection
+	int32 DistanceMin = 0;
+	for (int32 i = 0; i < 3; i++) {
+		if (Centre[i] < SecondCorner[i]) DistanceMin += FMath::Square(Centre[i] - SecondCorner[i]);
+		else if (Centre[i] > FirstCorner[i]) DistanceMin += FMath::Square(Centre[i] - FirstCorner[i]);
+	}
+
+	if (!(DistanceMin <= FMath::Square(Extent))) {
+		//if out of main send back an empty array
+		//if (GEngine)
+		//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("not hit octant"));
+		return TArray<IOctreeInterface*>();
+	}
+
+	if (!subdevided) {
+		//end of tree
+		return NodeList;
+	}
+
+	TArray<IOctreeInterface*> QuerydNodeList;
+
+	for (const TUniquePtr<Octant>& octant : Octants) {
+		//now do this function in the next that i havent set up yet
+		QuerydNodeList = octant->NodeQuery(Centre, Extent);
+	}
+
+	return QuerydNodeList;
+}
+
+void AOctreeMain::pauseNodes()
+{
+	for (IOctreeInterface*& Node : NodeList) {
+		Node->TempPause();
 	}
 }

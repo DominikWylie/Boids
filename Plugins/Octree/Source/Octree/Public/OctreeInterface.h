@@ -24,7 +24,9 @@ public:
 	//Kill node is called (and removed from array) when it has left tree boundary
 	virtual void Kill() = 0;
 
+	virtual void TempPause() = 0;
 
-	UFUNCTION(BlueprintNativeEvent)
-	void BoidGuy();
+	virtual void colourin() = 0;
+
+	virtual int32 id() = 0;
 };
