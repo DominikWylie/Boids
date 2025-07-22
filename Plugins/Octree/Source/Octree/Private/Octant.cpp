@@ -35,16 +35,6 @@ Octant::Octant(
 		SubdivideTree();
 	}
 
-	//unneeded as reset evrey time
-	//else if (subdevided) {
-	//	//if the suboctants are no longer wanted
-	//	subdevided = false;
-
-	//	for (TUniquePtr<Octant>& octant : Octants) {
-	//		octant.Reset();
-	//	}
-	//}
-
 }
 
 Octant::~Octant()
@@ -57,9 +47,12 @@ TArray<IOctreeInterface*> Octant::NodeQuery(const FVector& Centre, const float E
 
 	int32 DistanceMin = 0;
 
+	FVector FirstWorldCorner = FirstCorner + WorldLocation;
+	FVector SecondWorldCorner = SecondCorner + WorldLocation;
+
 	for (int32 i = 0; i < 3; i++) {
-		if (Centre[i] < SecondCorner[i]) DistanceMin += FMath::Square(Centre[i] - SecondCorner[i]);
-		else if (Centre[i] > FirstCorner[i]) DistanceMin += FMath::Square(Centre[i] - FirstCorner[i]);
+		if (Centre[i] < SecondWorldCorner[i]) DistanceMin += FMath::Square(Centre[i] - SecondWorldCorner[i]);
+		else if (Centre[i] > FirstWorldCorner[i]) DistanceMin += FMath::Square(Centre[i] - FirstWorldCorner[i]);
 	}
 
 	if (!(DistanceMin <= FMath::Square(Extent))) {
@@ -77,7 +70,7 @@ TArray<IOctreeInterface*> Octant::NodeQuery(const FVector& Centre, const float E
 
 		if (bBoundingBoxVisibiliy) {
 			DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, BoxColour);
-			DrawDebugString(World, FirstCorner + WorldLocation, FString::FromInt(NodeMatchIDTemp));
+			//DrawDebugString(World, FirstCorner + WorldLocation, FString::FromInt(NodeMatchIDTemp));
 		}
 		return NodeList;
 	}

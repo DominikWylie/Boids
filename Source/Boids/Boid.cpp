@@ -29,7 +29,7 @@ void ABoid::Tick(float DeltaTime)
 		SetActorLocation(GetActorLocation() + (GetActorUpVector() * Speed * DeltaTime));
 	}
 	else {
-		DrawDebugString(GetWorld(), GetActorLocation() + FVector(0, 0, 70), FString::FromInt(NodeMatchIDTemp), NULL, FColor::Red, -1.f);
+		//DrawDebugString(GetWorld(), GetActorLocation() + FVector(0, 0, 70), FString::FromInt(NodeMatchIDTemp), NULL, FColor::Red, -1.f);
 	}
 
 	FVector loc = GetActorLocation();
@@ -56,7 +56,7 @@ void ABoid::TempPause()
 void ABoid::colourin()
 {
 	float radius = 100;
-	//FVector location = FVector(0, 0, 1200);
+	FVector location = FVector(0, 0, 1200);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), radius, 15, FColor::Purple, false);
 }
 

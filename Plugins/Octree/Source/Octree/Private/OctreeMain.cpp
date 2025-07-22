@@ -376,11 +376,14 @@ TArray<IOctreeInterface*> AOctreeMain::NodeQuery(const FVector& Centre, float Ex
 	//if (GEngine)
 	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("query hit"));
 
-	//sphere aabb collision detection
 	int32 DistanceMin = 0;
+
+	FVector FirstWorldCorner = FirstCorner + WorldLocation;
+	FVector SecondWorldCorner = SecondCorner + WorldLocation;
+
 	for (int32 i = 0; i < 3; i++) {
-		if (Centre[i] < SecondCorner[i]) DistanceMin += FMath::Square(Centre[i] - SecondCorner[i]);
-		else if (Centre[i] > FirstCorner[i]) DistanceMin += FMath::Square(Centre[i] - FirstCorner[i]);
+		if (Centre[i] < SecondWorldCorner[i]) DistanceMin += FMath::Square(Centre[i] - SecondWorldCorner[i]);
+		else if (Centre[i] > FirstWorldCorner[i]) DistanceMin += FMath::Square(Centre[i] - FirstWorldCorner[i]);
 	}
 
 	if (!(DistanceMin <= FMath::Square(Extent))) {
@@ -399,7 +402,11 @@ TArray<IOctreeInterface*> AOctreeMain::NodeQuery(const FVector& Centre, float Ex
 
 	for (const TUniquePtr<Octant>& octant : Octants) {
 		//now do this function in the next that i havent set up yet
-		QuerydNodeList = octant->NodeQuery(Centre, Extent);
+		QuerydNodeList += octant->NodeQuery(Centre, Extent);
+	}
+
+	for (IOctreeInterface* node : QuerydNodeList) {
+		node->colourin();
 	}
 
 	return QuerydNodeList;
