@@ -9,6 +9,8 @@
 
 #include "Boid.generated.h"
 
+class AOctreeMain;
+
 UCLASS()
 class BOIDS_API ABoid : public AActor, public IOctreeInterface
 {
@@ -17,6 +19,8 @@ class BOIDS_API ABoid : public AActor, public IOctreeInterface
 public:	
 	// Sets default values for this actor's properties
 	ABoid();
+
+	void initialise(TObjectPtr<AOctreeMain> Octree);
 
 	UPROPERTY(EditAnywhere)
 	float Speed = 700.f;
@@ -43,4 +47,12 @@ public:
 
 	int32 id() override;
 
+private:
+	
+	float VisualRange = 500.f;
+	float ProtectedRange = 200.f;
+
+	TObjectPtr<AOctreeMain> Octree;
+
+	void CalculateTrajectory(TArray<IOctreeInterface*> Boids);
 };

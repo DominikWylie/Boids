@@ -84,50 +84,9 @@ TArray<IOctreeInterface*> Octant::NodeQuery(const FVector& Centre, const float E
 	return QuerydNodeList;
 }
 
-//void Octant::Tick(/*UWorld* World*/)
-//{
-//	//DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, FColor::Red);
-//
-//	//TArray<IOctreeInterface*> NodesToRemove;
-//
-//	//for (IOctreeInterface*& Node : NodeList) {
-//
-//	//	//check if all nodes are inside
-//	//	if (!IsWithinArea(Node->GetPosition())) {
-//	//		//kill node for now
-//
-//	//		NodesToRemove.Add(Node);
-//	//	}
-//	//}
-//
-//	//for (IOctreeInterface*& Node : NodesToRemove) {
-//	//	NodeList.Remove(Node);
-//	//	Node->Kill();
-//	//}
-//
-//	////if exeeds max nodes subdivide and pass nodes to them to do thier thing
-//
-//	//if (NodeList.Num() > MaxNodesPerOctant) {
-//	//	SubdivideTree();
-//	//}
-//
-//	////if (subdevided) {
-//	////	for (TUniquePtr<Octant>& octant : Octants) {
-//	////		octant->Tick(World);
-//	////	}
-//	////}
-//}
-
 void Octant::SubdivideTree()
 {
-	//if (subdevided) {
-	//	return;
-	//}
-
 	FVector HalfDistance = (SecondCorner - FirstCorner) / 2;
-
-	//TArray<IOctreeInterface*> TempNodeList = NodeList;
-	//origonaly was nodelist just passed in (if broke)
 
 	//top front left
 	TArray<IOctreeInterface*> TopFrontLeftNodes;

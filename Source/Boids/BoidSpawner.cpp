@@ -78,7 +78,7 @@ void ABoidSpawner::Tick(float DeltaTime)
 	////example query
 	//DrawDebugBox(World, ((SecondCorner + GetActorLocation()) + (FirstCorner + GetActorLocation())) / 2, (FirstCorner - SecondCorner) / 2, FColor::Blue);
 
-	float radius = 1000;
+	float radius = 150;
 	FVector location = FVector(0, 0, 1200);
 	DrawDebugSphere(World, location, radius, 15, FColor::Blue);
 

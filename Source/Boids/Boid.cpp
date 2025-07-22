@@ -2,6 +2,8 @@
 
 
 #include "Boid.h"
+#include "OctreeMain.h"
+
 
 // Sets default values
 ABoid::ABoid()
@@ -11,6 +13,11 @@ ABoid::ABoid()
 
 	NodeMatchIDTemp = FMath::RandRange(1, 1000);
 
+}
+
+void ABoid::initialise(TObjectPtr<AOctreeMain> Otree)
+{
+	Octree = Otree;
 }
 
 // Called when the game starts or when spawned
@@ -25,17 +32,11 @@ void ABoid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//CalculateTrajectory(Octree->NodeQuery(GetActorLocation(), VisualRange));
+	
 	if (move) {
 		SetActorLocation(GetActorLocation() + (GetActorUpVector() * Speed * DeltaTime));
 	}
-	else {
-		//DrawDebugString(GetWorld(), GetActorLocation() + FVector(0, 0, 70), FString::FromInt(NodeMatchIDTemp), NULL, FColor::Red, -1.f);
-	}
-
-	FVector loc = GetActorLocation();
-
-	//if (GEngine)
-	//	GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Green, FString::Printf(TEXT("X %f, Y %f, Z %f, "), loc.X, loc.Y, loc.Z));
 }
 
 FVector ABoid::GetPosition() const
@@ -63,4 +64,28 @@ void ABoid::colourin()
 int32 ABoid::id()
 {
 	return NodeMatchIDTemp;
+}
+
+void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids)
+{
+	FVector Displacement;
+
+	for (IOctreeInterface*& Boid : Boids) {
+
+		Displacement = GetActorLocation() - Boid->GetPosition();
+
+		//FMath::Abs
+		if (FMath::Abs(Displacement.Size()) < VisualRange) {
+
+		}
+	}
+
+	//for (int i = 0; i < Boids.Num(); i++) {
+
+	//	for (int j = 0; j < Boids.Num(); j++) {
+	//		if (i == j) continue;
+
+	//		Displacement = GetActorLocation - Boids[]
+	//	}
+	//}
 }
