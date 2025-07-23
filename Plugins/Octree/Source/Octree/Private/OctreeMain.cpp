@@ -405,16 +405,5 @@ TArray<IOctreeInterface*> AOctreeMain::NodeQuery(const FVector& Centre, float Ex
 		QuerydNodeList += octant->NodeQuery(Centre, Extent);
 	}
 
-	for (IOctreeInterface* node : QuerydNodeList) {
-		node->colourin();
-	}
-
 	return QuerydNodeList;
-}
-
-void AOctreeMain::pauseNodes()
-{
-	for (IOctreeInterface*& Node : NodeList) {
-		Node->TempPause();
-	}
 }

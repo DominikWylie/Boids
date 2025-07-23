@@ -20,7 +20,10 @@ public:
 	// Sets default values for this actor's properties
 	ABoid();
 
-	void initialise(TObjectPtr<AOctreeMain> Octree);
+	void initialise(
+		const TObjectPtr<AOctreeMain>& Octree, 
+		const FVector& FirstBounds, 
+		const FVector& Secondbounds);
 
 	UPROPERTY(EditAnywhere)
 	float Speed = 700.f;
@@ -37,20 +40,20 @@ public:
 
 	void Kill() override;
 
-	void TempPause() override;
-
-	void colourin() override;
-
 	bool move = true;
 
 	int32 NodeMatchIDTemp = 0;
 
-	int32 id() override;
-
 private:
 	
-	float VisualRange = 500.f;
-	float ProtectedRange = 200.f;
+	float 
+		VisualRange = 500.f, 
+		ProtectedRange = 200.f,
+		TurnFactor = 10.f;
+
+	FVector
+		UpperBounds = FVector::ZeroVector,
+		LowerBounds = FVector::ZeroVector;
 
 	TObjectPtr<AOctreeMain> Octree;
 

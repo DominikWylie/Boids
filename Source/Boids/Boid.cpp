@@ -3,6 +3,7 @@
 
 #include "Boid.h"
 #include "OctreeMain.h"
+#include "BoidSpawner.h"
 
 
 // Sets default values
@@ -15,16 +16,17 @@ ABoid::ABoid()
 
 }
 
-void ABoid::initialise(TObjectPtr<AOctreeMain> Otree)
+void ABoid::initialise(const TObjectPtr<AOctreeMain>& Otree, const FVector& FBounds, const FVector& Sbounds)
 {
 	Octree = Otree;
+	UpperBounds = FBounds;
+	LowerBounds = Sbounds;
 }
 
 // Called when the game starts or when spawned
 void ABoid::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -32,9 +34,10 @@ void ABoid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//CalculateTrajectory(Octree->NodeQuery(GetActorLocation(), VisualRange));
+	CalculateTrajectory(Octree->NodeQuery(GetActorLocation(), VisualRange));
 	
 	if (move) {
+		//rotate then translate
 		SetActorLocation(GetActorLocation() + (GetActorUpVector() * Speed * DeltaTime));
 	}
 }
@@ -49,43 +52,74 @@ void ABoid::Kill()
 	Destroy();
 }
 
-void ABoid::TempPause()
-{
-	move = false;
-}
-
-void ABoid::colourin()
-{
-	float radius = 100;
-	FVector location = FVector(0, 0, 1200);
-	DrawDebugSphere(GetWorld(), GetActorLocation(), radius, 15, FColor::Purple, false);
-}
-
-int32 ABoid::id()
-{
-	return NodeMatchIDTemp;
-}
-
 void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids)
 {
-	FVector Displacement;
+	FRotator Rotation = GetActorRotation();
 
-	for (IOctreeInterface*& Boid : Boids) {
+	FVector Location = GetActorLocation();
 
-		Displacement = GetActorLocation() - Boid->GetPosition();
-
-		//FMath::Abs
-		if (FMath::Abs(Displacement.Size()) < VisualRange) {
-
-		}
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Yellow, FString::Printf(TEXT("World delta for current frame equals %f"), GetWorld()->TimeSeconds));
+	
+	if (7 > 1000) {
+		int test = 89035;
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("shithead!"));
 	}
 
-	//for (int i = 0; i < Boids.Num(); i++) {
+	if (Location.X > UpperBounds.X || Location.Y > UpperBounds.Y) {
+		Rotation.Yaw -= TurnFactor;
+	}
 
-	//	for (int j = 0; j < Boids.Num(); j++) {
-	//		if (i == j) continue;
+	if (Location.Z > UpperBounds.Z) {
+		Rotation.Pitch -= TurnFactor;
+	}
 
-	//		Displacement = GetActorLocation - Boids[]
+	if (Location.X < LowerBounds.X || Location.Y < LowerBounds.Y) {
+		Rotation.Yaw += TurnFactor;
+	}
+
+	if (Location.Z < LowerBounds.Z) {
+		Rotation.Pitch += TurnFactor;
+	}
+
+	SetActorRotation(Rotation);
+
+
+	//FVector DisplacementToOtherBoid;
+
+	//FVector
+	//	CloseRangeDisplacement = FVector::ZeroVector,
+	//	re = FVector::ZeroVector,
+	//	ro = FVector::ZeroVector;
+
+	//float NeighboringBoids = 0;
+
+	//for (IOctreeInterface*& Boid : Boids) {
+
+	//	DisplacementToOtherBoid = GetActorLocation() - Boid->GetPosition();
+
+
+	//	if (DisplacementToOtherBoid.SizeSquared() < FMath::Square(VisualRange)) {
+
+	//		float DisplacementToOtherBoidSquared = DisplacementToOtherBoid.SizeSquared();
+
+	//		if (DisplacementToOtherBoidSquared < FMath::Square(ProtectedRange)) {
+	//			CloseRangeDisplacement += DisplacementToOtherBoid;
+	//		}
+	//		else {
+	//			//in visual but not protected
+
+	//		}
 	//	}
 	//}
+
+	////for (int i = 0; i < Boids.Num(); i++) {
+
+	////	for (int j = 0; j < Boids.Num(); j++) {
+	////		if (i == j) continue;
+
+	////		Displacement = GetActorLocation - Boids[]
+	////	}
+	////}
 }

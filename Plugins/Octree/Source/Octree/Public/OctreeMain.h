@@ -28,26 +28,24 @@ public:
 	// Sets default values for this actor's properties
 	AOctreeMain();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (MakeEditWidget = true))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Meta = (MakeEditWidget = true))
 	FVector FirstCorner = FVector(50.f, 50.f, 50.f);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (MakeEditWidget = true))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Meta = (MakeEditWidget = true))
 	FVector SecondCorner = FVector(-50.f, -50.f, 50.f);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
 	bool bBoundingBoxVisibiliy = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
 	uint8 MaxNodesPerOctant = 1;
 
 	void AddNode(IOctreeInterface* Node);
 
-	uint32 GetNodeNum() { return NodeList.Num(); }
+	uint32 GetNodeNum() const { return NodeList.Num(); }
 
 	//overload if other shapes needed
 	TArray<IOctreeInterface*> NodeQuery(const FVector& Centre, float Extent);
-
-	void pauseNodes();
 
 protected:
 

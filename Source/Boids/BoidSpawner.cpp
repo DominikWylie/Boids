@@ -27,6 +27,11 @@ void ABoidSpawner::BeginPlay()
 	}
 
 	Octree = Cast<AOctreeMain>(UGameplayStatics::GetActorOfClass(World, AOctreeMain::StaticClass()));
+
+	if (Octree) {
+		firstBounds = (Octree->FirstCorner - FVector(BoundsBuffer)) - GetActorLocation();
+		SecondBounds = (Octree->SecondCorner + FVector(BoundsBuffer)) - GetActorLocation();;
+	}
 }
 
 void ABoidSpawner::Spawn()
@@ -36,16 +41,11 @@ void ABoidSpawner::Spawn()
 			TEXT(__FILE__), __LINE__, TEXT(__FUNCTION__));
 		return;
 	}
-
-	if (BoidCount > 35) {
-		Octree->pauseNodes();
-		return;
-	}
 	
 	//ill keep the octree getter but this was made just to avoid overloading the machine
-	//if (Octree->GetNodeNum() > 100) {
-	//	return;
-	//}
+	if (Octree->GetNodeNum() > 100) {
+		return;
+	}
 
 	if (World) {
 		FRotator BoidRotation;
@@ -56,12 +56,14 @@ void ABoidSpawner::Spawn()
 		
 		AActor* SpawnedBoid = World->SpawnActor<ABoid>(BoidBlueprint, GetActorLocation(), BoidRotation);
 
+		ABoid* Boid = Cast<ABoid>(SpawnedBoid);
+		if (Boid) {
+			Boid->initialise(Octree, firstBounds, SecondBounds);
+		}
+
 		IOctreeInterface* BoidsInterface = Cast<IOctreeInterface>(SpawnedBoid);
 
 		Octree->AddNode(BoidsInterface);
-
-		//if (GEngine)
-		//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Hit"));
 	}
 
 	BoidCount++;
@@ -72,15 +74,12 @@ void ABoidSpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//FVector FirstCorner = FVector(1500, 1500, 1000);
-	//FVector SecondCorner = FVector(0, 0, 100);
-
-	////example query
-	//DrawDebugBox(World, ((SecondCorner + GetActorLocation()) + (FirstCorner + GetActorLocation())) / 2, (FirstCorner - SecondCorner) / 2, FColor::Blue);
-
 	float radius = 150;
 	FVector location = FVector(0, 0, 1200);
 	DrawDebugSphere(World, location, radius, 15, FColor::Blue);
+
+	DrawDebugBox(World, ((SecondBounds + GetActorLocation()) + (firstBounds + GetActorLocation())) / 2, (firstBounds - SecondBounds) / 2, FColor::Green);
+
 
 	TArray<IOctreeInterface*> queriedNodes;
 
@@ -88,16 +87,8 @@ void ABoidSpawner::Tick(float DeltaTime)
 		queriedNodes = Octree->NodeQuery(location, radius);
 	}
 
-	for (IOctreeInterface*& node : queriedNodes) {
-		node->colourin();
-	}
-
-	if (GEngine) {
-		GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Orange, FString::Printf(TEXT("nodes total %d"), BoidCount));
-		GEngine->AddOnScreenDebugMessage(2, 15.0f, FColor::Yellow, FString::Printf(TEXT("nodes picked up %d"), queriedNodes.Num()));
-	}
-
-
-
-	int oiadg = 537;
+	//if (GEngine) {
+	//	GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Orange, FString::Printf(TEXT("nodes total %d"), BoidCount));
+	//	GEngine->AddOnScreenDebugMessage(2, 15.0f, FColor::Yellow, FString::Printf(TEXT("nodes picked up %d"), queriedNodes.Num()));
+	//}
 }

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-//#include "OctreeMain.h"
 
 #include "BoidSpawner.generated.h"
 
@@ -17,17 +16,17 @@ class BOIDS_API ABoidSpawner : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	ABoidSpawner();
 
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	//less readable && more fast
+	TPair<FVector, FVector> GetBounds() { return TPair<FVector, FVector>(firstBounds, SecondBounds); }
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<ABoid> BoidBlueprint;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	void Spawn();
@@ -37,6 +36,12 @@ private:
 	UWorld* World;
 
 	TObjectPtr<AOctreeMain> Octree;
+
+	FVector 
+		firstBounds = FVector::ZeroVector,
+		SecondBounds = FVector::ZeroVector;
+
+	float BoundsBuffer = 2000.f;
 
 	int32 BoidCount = 0;
 };

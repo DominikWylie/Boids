@@ -62,14 +62,8 @@ TArray<IOctreeInterface*> Octant::NodeQuery(const FVector& Centre, const float E
 
 	if (!subdevided) {
 		//end of tree
-		int32 NodeMatchIDTemp = 0;
-
-		if (NodeList.Num() > 0) {
-			NodeMatchIDTemp = NodeList[0]->id();
-		}
-
 		if (bBoundingBoxVisibiliy) {
-			DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, BoxColour);
+			//DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, BoxColour);
 			//DrawDebugString(World, FirstCorner + WorldLocation, FString::FromInt(NodeMatchIDTemp));
 		}
 		return NodeList;
