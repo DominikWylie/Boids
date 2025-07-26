@@ -53,7 +53,8 @@ private:
 
 	FVector
 		UpperBounds = FVector::ZeroVector,
-		LowerBounds = FVector::ZeroVector;
+		LowerBounds = FVector::ZeroVector,
+		BoundsCentre = FVector::ZeroVector;
 
 	TObjectPtr<AOctreeMain> Octree;
 

@@ -4,7 +4,7 @@
 #include "Boid.h"
 #include "OctreeMain.h"
 #include "BoidSpawner.h"
-
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ABoid::ABoid()
@@ -21,6 +21,8 @@ void ABoid::initialise(const TObjectPtr<AOctreeMain>& Otree, const FVector& FBou
 	Octree = Otree;
 	UpperBounds = FBounds;
 	LowerBounds = Sbounds;
+
+	BoundsCentre = (UpperBounds - LowerBounds) / 2;
 }
 
 // Called when the game starts or when spawned
@@ -67,27 +69,48 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids)
 	//		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("shithead!"));
 	//}
 
-	if (Location.X > UpperBounds.X || Location.Y > UpperBounds.Y) {
-		Rotation.Yaw -= TurnFactor;
-		//if (GEngine)
-		//	GEngine->AddOnScreenDebugMessage(2, 15.0f, FColor::Yellow, FString::Printf(TEXT("location X: %f, UpperBounds X: %f,  location Y: %f, UpperBounds Y: %f"), 
-		//		Location.X, UpperBounds.X, Location.Y, UpperBounds.Y));
-	}
+	//FRotator test = UKismetMathLibrary::findlookat
 
-	if (Location.Z > UpperBounds.Z) {
-		Rotation.Pitch -= TurnFactor;
-		//if (GEngine)
-		//	GEngine->AddOnScreenDebugMessage(3, 15.0f, FColor::Yellow, FString::Printf(TEXT("location Z: %f, UpperBounds Z: %f"),
-		//		Location.Z, UpperBounds.Z));
-	}
+	if (Location.X > UpperBounds.X ||
+		Location.Y > UpperBounds.Y ||
+		Location.Z > UpperBounds.Z ||
+		Location.X < LowerBounds.X ||
+		Location.Y < LowerBounds.Y ||
+		Location.Z < LowerBounds.Z) 
+	{
+		FVector Direction = BoundsCentre - GetActorLocation();
+		Direction.Normalize();
 
-	if (Location.X < LowerBounds.X || Location.Y < LowerBounds.Y) {
-		Rotation.Yaw += TurnFactor;
-	}
 
-	if (Location.Z < LowerBounds.Z) {
-		Rotation.Pitch += TurnFactor;
+		//FVector CurrentLocation = GetActorLocation();
+		
+		//FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(CurrentLocation, BoundsCentre);
+
+		//TargetRotation.Roll = 0.f;
+
+		//FRotationMatrix::MakeFrom
+
+		//FRotator SmoothRotation = FMath::RInterpConstantTo(GetActorRotation() )
+
+		//FQuat test
 	}
+	
+	
+	//if (Location.X > UpperBounds.X || Location.Y > UpperBounds.Y) {
+	//	Rotation.Yaw -= TurnFactor;
+	//}
+
+	//if (Location.Z > UpperBounds.Z) {
+	//	Rotation.Pitch -= TurnFactor;
+	//}
+
+	//if (Location.X < LowerBounds.X || Location.Y < LowerBounds.Y) {
+	//	Rotation.Yaw += TurnFactor;
+	//}
+
+	//if (Location.Z < LowerBounds.Z) {
+	//	Rotation.Pitch += TurnFactor;
+	//}
 
 	SetActorRotation(Rotation);
 

@@ -41,7 +41,7 @@ private:
 		FirstBounds = FVector::ZeroVector,
 		SecondBounds = FVector::ZeroVector;
 
-	float BoundsBuffer = 400.f;
+	float BoundsBuffer = 1000.f;
 
 	int32 BoidCount = 0;
 };
