@@ -29,8 +29,14 @@ void ABoidSpawner::BeginPlay()
 	Octree = Cast<AOctreeMain>(UGameplayStatics::GetActorOfClass(World, AOctreeMain::StaticClass()));
 
 	if (Octree) {
-		firstBounds = (Octree->FirstCorner - FVector(BoundsBuffer)) - GetActorLocation();
-		SecondBounds = (Octree->SecondCorner + FVector(BoundsBuffer)) - GetActorLocation();;
+		TPair<FVector, FVector> Corners = Octree->GetWorldCorners();
+
+		FirstBounds = Corners.Key - FVector(BoundsBuffer);
+		SecondBounds = Corners.Value + FVector(BoundsBuffer);
+
+		//if (GEngine)
+		//	GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Yellow, FString::Printf(TEXT("FirstBounds: %s, FirstCorner: %s,  SecondBounds: %s, SecondCorner: %s"),
+		//		*FirstBounds.ToString(), *Octree->FirstCorner.ToString(), *SecondBounds.ToString(), *Octree->SecondCorner.ToString()));
 	}
 }
 
@@ -58,7 +64,7 @@ void ABoidSpawner::Spawn()
 
 		ABoid* Boid = Cast<ABoid>(SpawnedBoid);
 		if (Boid) {
-			Boid->initialise(Octree, firstBounds, SecondBounds);
+			Boid->initialise(Octree, FirstBounds, SecondBounds);
 		}
 
 		IOctreeInterface* BoidsInterface = Cast<IOctreeInterface>(SpawnedBoid);
@@ -78,7 +84,8 @@ void ABoidSpawner::Tick(float DeltaTime)
 	FVector location = FVector(0, 0, 1200);
 	DrawDebugSphere(World, location, radius, 15, FColor::Blue);
 
-	DrawDebugBox(World, ((SecondBounds + GetActorLocation()) + (firstBounds + GetActorLocation())) / 2, (firstBounds - SecondBounds) / 2, FColor::Green);
+	//DrawDebugBox(World, ((SecondBounds - GetActorLocation()) + (FirstBounds - GetActorLocation())) / 2, (FirstBounds - SecondBounds) / 2, FColor::Green);
+	DrawDebugBox(World, (SecondBounds + FirstBounds) / 2, (FirstBounds - SecondBounds) / 2, FColor::Green);
 
 
 	TArray<IOctreeInterface*> queriedNodes;

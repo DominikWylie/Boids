@@ -61,18 +61,24 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids)
 	//if (GEngine)
 	//	GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Yellow, FString::Printf(TEXT("World delta for current frame equals %f"), GetWorld()->TimeSeconds));
 	
-	if (7 > 1000) {
-		int test = 89035;
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("shithead!"));
-	}
+	//if (140.f > 7860.f || -290.f > 8290.f) {
+	//	int test = 89035;
+	//	if (GEngine)
+	//		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("shithead!"));
+	//}
 
 	if (Location.X > UpperBounds.X || Location.Y > UpperBounds.Y) {
 		Rotation.Yaw -= TurnFactor;
+		//if (GEngine)
+		//	GEngine->AddOnScreenDebugMessage(2, 15.0f, FColor::Yellow, FString::Printf(TEXT("location X: %f, UpperBounds X: %f,  location Y: %f, UpperBounds Y: %f"), 
+		//		Location.X, UpperBounds.X, Location.Y, UpperBounds.Y));
 	}
 
 	if (Location.Z > UpperBounds.Z) {
 		Rotation.Pitch -= TurnFactor;
+		//if (GEngine)
+		//	GEngine->AddOnScreenDebugMessage(3, 15.0f, FColor::Yellow, FString::Printf(TEXT("location Z: %f, UpperBounds Z: %f"),
+		//		Location.Z, UpperBounds.Z));
 	}
 
 	if (Location.X < LowerBounds.X || Location.Y < LowerBounds.Y) {

@@ -47,6 +47,8 @@ public:
 	//overload if other shapes needed
 	TArray<IOctreeInterface*> NodeQuery(const FVector& Centre, float Extent);
 
+	TPair<FVector, FVector> GetWorldCorners();
+
 protected:
 
 	virtual void OnConstruction(const FTransform& Transform) override;

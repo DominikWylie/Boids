@@ -21,7 +21,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	//less readable && more fast
-	TPair<FVector, FVector> GetBounds() { return TPair<FVector, FVector>(firstBounds, SecondBounds); }
+	TPair<FVector, FVector> GetBounds() { return TPair<FVector, FVector>(FirstBounds, SecondBounds); }
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<ABoid> BoidBlueprint;
@@ -38,10 +38,10 @@ private:
 	TObjectPtr<AOctreeMain> Octree;
 
 	FVector 
-		firstBounds = FVector::ZeroVector,
+		FirstBounds = FVector::ZeroVector,
 		SecondBounds = FVector::ZeroVector;
 
-	float BoundsBuffer = 2000.f;
+	float BoundsBuffer = 400.f;
 
 	int32 BoidCount = 0;
 };
