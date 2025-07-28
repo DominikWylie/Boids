@@ -38,6 +38,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	FVector GetPosition() const override;
+	FVector GetForwardVector() const override;
+	float GetSpeed() const override;
 
 	void Kill() override;
 
@@ -48,10 +50,13 @@ public:
 private:
 	
 	float 
-		VisualRange = 400.f, 
+		VisualRange = 2000.f, 
 		ProtectedRange = 200.f,
 		BoundsTurningSpeed = 3.f,
-		GeneralTurningSpeed = 3.f;
+		GeneralTurningSpeed = 3.f,
+		Acceleration = 0.1f,
+		SpeedTolerance = 0.3f,
+		AvoidBoidsFactor = .5f;
 
 	FVector
 		UpperBounds = FVector::ZeroVector,

@@ -20,6 +20,8 @@ class IOctreeInterface
 
 public:
 	virtual FVector GetPosition() const = 0;
+	virtual FVector GetForwardVector() const = 0;
+	virtual float GetSpeed() const = 0;
 
 	//Kill node is called (and removed from array) when it has left tree boundary
 	virtual void Kill() = 0;

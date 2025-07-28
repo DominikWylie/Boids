@@ -48,6 +48,16 @@ FVector ABoid::GetPosition() const
 	return GetActorLocation();
 }
 
+FVector ABoid::GetForwardVector() const
+{
+	return GetActorForwardVector();
+}
+
+float ABoid::GetSpeed() const
+{
+	return Speed;
+}
+
 void ABoid::Kill()
 {
 	Destroy();
@@ -81,15 +91,19 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 		return;
 	}
 
+
+
 	FVector TargetDirection = FVector::ZeroVector;
 
 	double VisualRangeSquared = FMath::Square(VisualRange);
 	double ProtectedRangeSquared = FMath::Square(ProtectedRange);
 
 	FVector PositionAverage = FVector::ZeroVector;
+	FVector ForwardAverage = FVector::ZeroVector;
+	FVector CloseBoidPositionAverage = FVector::ZeroVector;
+	float SpeedAverage = 0;
 	uint16 NeighboringBoids = 0;
 
-	//cohesion
 	for (IOctreeInterface*& boid : Boids) {
 		FVector boidPosition = boid->GetPosition();
 		double BoidDistanceSquared = FVector::DistSquared(boidPosition, Location);
@@ -97,63 +111,57 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 		//only care about within visual range and not protected range
 		if (BoidDistanceSquared < VisualRangeSquared && BoidDistanceSquared > ProtectedRangeSquared) {
 
+			//cohesion
 			PositionAverage += boidPosition;
+			
+			//alignment - direction and speed
+			ForwardAverage += boid->GetForwardVector();
+			SpeedAverage += boid->GetSpeed();
+			
 			NeighboringBoids++;
 		}
+		else if (BoidDistanceSquared < ProtectedRangeSquared) {
+			//seperation
+			CloseBoidPositionAverage += Location - boidPosition;
+		}
+
+
 	}
 
 	if (NeighboringBoids > 0) {
+		//expensive
 		PositionAverage /= NeighboringBoids;
+		ForwardAverage /= NeighboringBoids;
+		SpeedAverage /= NeighboringBoids;
 
-		TargetDirection += PositionAverage;
+		CloseBoidPositionAverage *= AvoidBoidsFactor;
 
-		//if (GEngine)
-		//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("more than  zero bods!"));
+		//TargetDirection = (PositionAverage + ForwardAverage + CloseBoidPositionAverage) * .33f;
+
+		//i think its always going up is cos forard average is normalised and position average is not
+		TargetDirection = (PositionAverage + ForwardAverage) * .5f;
+
+		//maybe change speed depending on if target direction is further away than a caertaiun area 
+		// but would mess with the boids on the edges
+
+		//if ((Speed - SpeedAverage) > SpeedTolerance) {
+		//	Speed += Acceleration;
+		//}
+		//else if ((Speed - SpeedAverage) < -SpeedTolerance) {
+		//	Speed -= Acceleration;
+		//}
+
+		//TargetDirection = PositionAverage;
+
+		//move
+		TargetDirection.Normalize();
+
+		FQuat TargetQuat = TargetDirection.Rotation().Quaternion();
+
+		FQuat NewDirection = FQuat::Slerp(CurrentQuat, TargetQuat, GeneralTurningSpeed * dt);
+		//FQuat NewDirection = FQuat::FastLerp(CurrentQuat, TargetQuat, GeneralTurningSpeed * dt);
+
+		SetActorRotation(NewDirection);
 	}
 
-	//move
-	TargetDirection.Normalize();
-
-	FQuat TargetQuat = TargetDirection.Rotation().Quaternion();
-
-	FQuat NewDirection = FQuat::Slerp(CurrentQuat, TargetQuat, GeneralTurningSpeed * dt);
-
-	SetActorRotation(NewDirection);
-
-	//FVector DisplacementToOtherBoid;
-
-	//FVector
-	//	CloseRangeDisplacement = FVector::ZeroVector,
-	//	re = FVector::ZeroVector,
-	//	ro = FVector::ZeroVector;
-
-	//float NeighboringBoids = 0;
-
-	//for (IOctreeInterface*& Boid : Boids) {
-
-	//	DisplacementToOtherBoid = GetActorLocation() - Boid->GetPosition();
-
-
-	//	if (DisplacementToOtherBoid.SizeSquared() < FMath::Square(VisualRange)) {
-
-	//		float DisplacementToOtherBoidSquared = DisplacementToOtherBoid.SizeSquared();
-
-	//		if (DisplacementToOtherBoidSquared < FMath::Square(ProtectedRange)) {
-	//			CloseRangeDisplacement += DisplacementToOtherBoid;
-	//		}
-	//		else {
-	//			//in visual but not protected
-
-	//		}
-	//	}
-	//}
-
-	////for (int i = 0; i < Boids.Num(); i++) {
-
-	////	for (int j = 0; j < Boids.Num(); j++) {
-	////		if (i == j) continue;
-
-	////		Displacement = GetActorLocation - Boids[]
-	////	}
-	////}
 }
