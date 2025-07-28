@@ -23,7 +23,8 @@ public:
 	void initialise(
 		const TObjectPtr<AOctreeMain>& Octree, 
 		const FVector& FirstBounds, 
-		const FVector& Secondbounds);
+		const FVector& Secondbounds,
+		const FVector& CentreBounds);
 
 	UPROPERTY(EditAnywhere)
 	float Speed = 700.f;
@@ -49,14 +50,14 @@ private:
 	float 
 		VisualRange = 500.f, 
 		ProtectedRange = 200.f,
-		TurnFactor = 10.f;
+		RotationSpeed = 10.f;
 
 	FVector
 		UpperBounds = FVector::ZeroVector,
 		LowerBounds = FVector::ZeroVector,
-		BoundsCentre = FVector::ZeroVector;
+		CentreOfBounds = FVector::ZeroVector;
 
 	TObjectPtr<AOctreeMain> Octree;
 
-	void CalculateTrajectory(TArray<IOctreeInterface*> Boids);
+	void CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt);
 };

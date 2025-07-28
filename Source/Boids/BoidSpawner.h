@@ -39,7 +39,8 @@ private:
 
 	FVector 
 		FirstBounds = FVector::ZeroVector,
-		SecondBounds = FVector::ZeroVector;
+		SecondBounds = FVector::ZeroVector,
+		CentreBounds = FVector::ZeroVector;
 
 	float BoundsBuffer = 1000.f;
 

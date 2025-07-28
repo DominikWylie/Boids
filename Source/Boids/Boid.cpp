@@ -16,13 +16,12 @@ ABoid::ABoid()
 
 }
 
-void ABoid::initialise(const TObjectPtr<AOctreeMain>& Otree, const FVector& FBounds, const FVector& Sbounds)
+void ABoid::initialise(const TObjectPtr<AOctreeMain>& Otree, const FVector& FBounds, const FVector& Sbounds, const FVector& CBounds)
 {
 	Octree = Otree;
 	UpperBounds = FBounds;
 	LowerBounds = Sbounds;
-
-	BoundsCentre = (UpperBounds - LowerBounds) / 2;
+	CentreOfBounds = CBounds;
 }
 
 // Called when the game starts or when spawned
@@ -36,11 +35,11 @@ void ABoid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CalculateTrajectory(Octree->NodeQuery(GetActorLocation(), VisualRange));
+	CalculateTrajectory(Octree->NodeQuery(GetActorLocation(), VisualRange), DeltaTime);
 	
 	if (move) {
 		//rotate then translate
-		SetActorLocation(GetActorLocation() + (GetActorUpVector() * Speed * DeltaTime));
+		SetActorLocation(GetActorLocation() + (GetActorForwardVector() * Speed * DeltaTime));
 	}
 }
 
@@ -54,7 +53,7 @@ void ABoid::Kill()
 	Destroy();
 }
 
-void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids)
+void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 {
 	FRotator Rotation = GetActorRotation();
 
@@ -71,6 +70,8 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids)
 
 	//FRotator test = UKismetMathLibrary::findlookat
 
+	//DrawDebugSphere(GetWorld(), CentreOfBounds, 150, 10, FColor::Emerald);
+
 	if (Location.X > UpperBounds.X ||
 		Location.Y > UpperBounds.Y ||
 		Location.Z > UpperBounds.Z ||
@@ -78,8 +79,46 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids)
 		Location.Y < LowerBounds.Y ||
 		Location.Z < LowerBounds.Z) 
 	{
-		FVector Direction = BoundsCentre - GetActorLocation();
-		Direction.Normalize();
+		FVector TargetDirection = CentreOfBounds - GetActorLocation();
+		//TargetDirection.Normalize();
+
+		FQuat CurrentQuat = GetActorQuat();
+		FQuat TargetQuat = TargetDirection.Rotation().Quaternion();
+
+		FQuat NewQuat = FQuat::Slerp(CurrentQuat, TargetQuat, RotationSpeed * dt);
+
+		NewQuat.Normalize();
+
+		//SetActorRotation(NewQuat);
+
+
+		SetActorRotation(TargetQuat);
+
+
+		//FRotator testro = FRotator::ZeroRotator;
+
+		//testro.X = -testro.X;
+		//testro.Y = -testro.Y;
+		//testro.Z = -testro.Z;
+
+		//testro.Yaw = -testro.Yaw;
+		//testro.Pitch = -testro.Pitch;
+		//testro.Roll = -testro.Roll
+			;
+
+		//SetActorRotation(testro);
+
+
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("moving"));
+
+		//FQuat TargetRotator = TargetDirection.Rotation().Quaternion();
+
+
+		//FQuat TargetRotator = TargetDirection.Rotation().Quaternion();
+		//FQuat TargetQuat = Targettotator
+
+
 
 
 		//FVector CurrentLocation = GetActorLocation();
@@ -112,7 +151,7 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids)
 	//	Rotation.Pitch += TurnFactor;
 	//}
 
-	SetActorRotation(Rotation);
+	//SetActorRotation(Rotation);
 
 
 	//FVector DisplacementToOtherBoid;

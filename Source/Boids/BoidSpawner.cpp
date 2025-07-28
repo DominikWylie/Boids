@@ -29,14 +29,11 @@ void ABoidSpawner::BeginPlay()
 	Octree = Cast<AOctreeMain>(UGameplayStatics::GetActorOfClass(World, AOctreeMain::StaticClass()));
 
 	if (Octree) {
-		TPair<FVector, FVector> Corners = Octree->GetWorldCorners();
 
-		FirstBounds = Corners.Key - FVector(BoundsBuffer);
-		SecondBounds = Corners.Value + FVector(BoundsBuffer);
+		Octree->GetWorldCorners(FirstBounds, SecondBounds, CentreBounds);
 
-		//if (GEngine)
-		//	GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Yellow, FString::Printf(TEXT("FirstBounds: %s, FirstCorner: %s,  SecondBounds: %s, SecondCorner: %s"),
-		//		*FirstBounds.ToString(), *Octree->FirstCorner.ToString(), *SecondBounds.ToString(), *Octree->SecondCorner.ToString()));
+		FirstBounds -= FVector(BoundsBuffer);
+		SecondBounds += FVector(BoundsBuffer);
 	}
 }
 
@@ -64,7 +61,7 @@ void ABoidSpawner::Spawn()
 
 		ABoid* Boid = Cast<ABoid>(SpawnedBoid);
 		if (Boid) {
-			Boid->initialise(Octree, FirstBounds, SecondBounds);
+			Boid->initialise(Octree, FirstBounds, SecondBounds, CentreBounds);
 		}
 
 		IOctreeInterface* BoidsInterface = Cast<IOctreeInterface>(SpawnedBoid);

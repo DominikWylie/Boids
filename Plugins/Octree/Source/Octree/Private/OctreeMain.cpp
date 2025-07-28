@@ -408,7 +408,10 @@ TArray<IOctreeInterface*> AOctreeMain::NodeQuery(const FVector& Centre, float Ex
 	return QuerydNodeList;
 }
 
-TPair<FVector, FVector> AOctreeMain::GetWorldCorners()
+//returns the bounds and centre of the octree in world coords
+void AOctreeMain::GetWorldCorners(FVector& UpperCorner, FVector& LowerCorner, FVector& Centre)
 {
-	return TPair<FVector, FVector>(FirstCorner + WorldLocation, SecondCorner + WorldLocation);
+	UpperCorner = FirstCorner + WorldLocation;
+	LowerCorner = SecondCorner + WorldLocation;
+	Centre = ((UpperCorner + LowerCorner) / 2);
 }
