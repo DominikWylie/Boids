@@ -82,7 +82,7 @@ void ABoidSpawner::Tick(float DeltaTime)
 	DrawDebugSphere(World, location, radius, 15, FColor::Blue);
 
 	//DrawDebugBox(World, ((SecondBounds - GetActorLocation()) + (FirstBounds - GetActorLocation())) / 2, (FirstBounds - SecondBounds) / 2, FColor::Green);
-	DrawDebugBox(World, (SecondBounds + FirstBounds) / 2, (FirstBounds - SecondBounds) / 2, FColor::Green);
+	DrawDebugBox(World, (SecondBounds + FirstBounds) * 0.5f, (FirstBounds - SecondBounds) * 0.5f, FColor::Green);
 
 
 	TArray<IOctreeInterface*> queriedNodes;

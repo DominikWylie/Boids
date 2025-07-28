@@ -56,21 +56,8 @@ void ABoid::Kill()
 void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 {
 	FRotator Rotation = GetActorRotation();
-
 	FVector Location = GetActorLocation();
-
-	//if (GEngine)
-	//	GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Yellow, FString::Printf(TEXT("World delta for current frame equals %f"), GetWorld()->TimeSeconds));
-	
-	//if (140.f > 7860.f || -290.f > 8290.f) {
-	//	int test = 89035;
-	//	if (GEngine)
-	//		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("shithead!"));
-	//}
-
-	//FRotator test = UKismetMathLibrary::findlookat
-
-	//DrawDebugSphere(GetWorld(), CentreOfBounds, 150, 10, FColor::Emerald);
+	FQuat CurrentQuat = GetActorQuat();
 
 	if (Location.X > UpperBounds.X ||
 		Location.Y > UpperBounds.Y ||
@@ -79,80 +66,59 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 		Location.Y < LowerBounds.Y ||
 		Location.Z < LowerBounds.Z) 
 	{
-		FVector TargetDirection = CentreOfBounds - GetActorLocation();
-		//TargetDirection.Normalize();
+		FVector BoundsTargetDirection = CentreOfBounds - GetActorLocation();
+		BoundsTargetDirection.Normalize();
 
-		FQuat CurrentQuat = GetActorQuat();
-		FQuat TargetQuat = TargetDirection.Rotation().Quaternion();
+		FQuat BoundsTargetQuat = BoundsTargetDirection.Rotation().Quaternion();
 
-		FQuat NewQuat = FQuat::Slerp(CurrentQuat, TargetQuat, RotationSpeed * dt);
+		FQuat BoundsNewDirection = FQuat::Slerp(CurrentQuat, BoundsTargetQuat, BoundsTurningSpeed * dt);
 
-		NewQuat.Normalize();
+		BoundsNewDirection.Normalize();
 
-		//SetActorRotation(NewQuat);
+		SetActorRotation(BoundsNewDirection);
 
-
-		SetActorRotation(TargetQuat);
-
-
-		//FRotator testro = FRotator::ZeroRotator;
-
-		//testro.X = -testro.X;
-		//testro.Y = -testro.Y;
-		//testro.Z = -testro.Z;
-
-		//testro.Yaw = -testro.Yaw;
-		//testro.Pitch = -testro.Pitch;
-		//testro.Roll = -testro.Roll
-			;
-
-		//SetActorRotation(testro);
-
-
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("moving"));
-
-		//FQuat TargetRotator = TargetDirection.Rotation().Quaternion();
-
-
-		//FQuat TargetRotator = TargetDirection.Rotation().Quaternion();
-		//FQuat TargetQuat = Targettotator
-
-
-
-
-		//FVector CurrentLocation = GetActorLocation();
-		
-		//FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(CurrentLocation, BoundsCentre);
-
-		//TargetRotation.Roll = 0.f;
-
-		//FRotationMatrix::MakeFrom
-
-		//FRotator SmoothRotation = FMath::RInterpConstantTo(GetActorRotation() )
-
-		//FQuat test
+		//this overrides the ai if it hits the edge
+		return;
 	}
-	
-	
-	//if (Location.X > UpperBounds.X || Location.Y > UpperBounds.Y) {
-	//	Rotation.Yaw -= TurnFactor;
-	//}
 
-	//if (Location.Z > UpperBounds.Z) {
-	//	Rotation.Pitch -= TurnFactor;
-	//}
+	FVector TargetDirection = FVector::ZeroVector;
 
-	//if (Location.X < LowerBounds.X || Location.Y < LowerBounds.Y) {
-	//	Rotation.Yaw += TurnFactor;
-	//}
+	double VisualRangeSquared = FMath::Square(VisualRange);
+	double ProtectedRangeSquared = FMath::Square(ProtectedRange);
 
-	//if (Location.Z < LowerBounds.Z) {
-	//	Rotation.Pitch += TurnFactor;
-	//}
+	FVector PositionAverage = FVector::ZeroVector;
+	uint16 NeighboringBoids = 0;
 
-	//SetActorRotation(Rotation);
+	//cohesion
+	for (IOctreeInterface*& boid : Boids) {
+		FVector boidPosition = boid->GetPosition();
+		double BoidDistanceSquared = FVector::DistSquared(boidPosition, Location);
 
+		//only care about within visual range and not protected range
+		if (BoidDistanceSquared < VisualRangeSquared && BoidDistanceSquared > ProtectedRangeSquared) {
+
+			PositionAverage += boidPosition;
+			NeighboringBoids++;
+		}
+	}
+
+	if (NeighboringBoids > 0) {
+		PositionAverage /= NeighboringBoids;
+
+		TargetDirection += PositionAverage;
+
+		//if (GEngine)
+		//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("more than  zero bods!"));
+	}
+
+	//move
+	TargetDirection.Normalize();
+
+	FQuat TargetQuat = TargetDirection.Rotation().Quaternion();
+
+	FQuat NewDirection = FQuat::Slerp(CurrentQuat, TargetQuat, GeneralTurningSpeed * dt);
+
+	SetActorRotation(NewDirection);
 
 	//FVector DisplacementToOtherBoid;
 

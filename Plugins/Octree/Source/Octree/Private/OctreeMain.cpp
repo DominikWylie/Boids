@@ -59,13 +59,13 @@ void AOctreeMain::OnConstruction(const FTransform& Transform)
 void AOctreeMain::DrawBox()
 {
 	if (bBoundingBoxVisibiliy) {
-		DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, FColor::Red);
+		DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) * 0.5f, (FirstCorner - SecondCorner) * 0.5f, FColor::Red);
 	}
 }
 
 void AOctreeMain::SubdivideTree()
 {
-	FVector HalfDistance = (SecondCorner - FirstCorner) / 2;
+	FVector HalfDistance = (SecondCorner - FirstCorner) * 0.5f;
 
 	TArray<IOctreeInterface*> TempNodesList = NodeList;
 	//origonaly was nodelist just passed in (if broke)
@@ -413,5 +413,5 @@ void AOctreeMain::GetWorldCorners(FVector& UpperCorner, FVector& LowerCorner, FV
 {
 	UpperCorner = FirstCorner + WorldLocation;
 	LowerCorner = SecondCorner + WorldLocation;
-	Centre = ((UpperCorner + LowerCorner) / 2);
+	Centre = ((UpperCorner + LowerCorner) * 0.5f);
 }

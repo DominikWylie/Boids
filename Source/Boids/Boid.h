@@ -27,7 +27,7 @@ public:
 		const FVector& CentreBounds);
 
 	UPROPERTY(EditAnywhere)
-	float Speed = 700.f;
+	float Speed = 1300.f;
 
 protected:
 	// Called when the game starts or when spawned
@@ -48,9 +48,10 @@ public:
 private:
 	
 	float 
-		VisualRange = 500.f, 
+		VisualRange = 400.f, 
 		ProtectedRange = 200.f,
-		RotationSpeed = 10.f;
+		BoundsTurningSpeed = 3.f,
+		GeneralTurningSpeed = 3.f;
 
 	FVector
 		UpperBounds = FVector::ZeroVector,
