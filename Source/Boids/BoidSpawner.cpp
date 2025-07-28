@@ -53,9 +53,9 @@ void ABoidSpawner::Spawn()
 	if (World) {
 		FRotator BoidRotation;
 
-		BoidRotation.Yaw = FMath::RandRange(-90, 90);
-		BoidRotation.Pitch = FMath::RandRange(-90, 90);
-		//roll doesnt need changed (when using moidels may want to anchor it somehow)
+		BoidRotation.Yaw = FMath::RandRange(-180, 180);
+		BoidRotation.Pitch = FMath::RandRange(-180, 180);
+		BoidRotation.Roll = 0.f;
 		
 		AActor* SpawnedBoid = World->SpawnActor<ABoid>(BoidBlueprint, GetActorLocation(), BoidRotation);
 
