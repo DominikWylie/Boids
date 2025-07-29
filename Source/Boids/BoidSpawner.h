@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ImGuiModifier.h"
 
 #include "BoidSpawner.generated.h"
 
@@ -34,6 +35,10 @@ protected:
 	void Spawn();
 private:
 
+	ImGuiModifier ImGuiMods;
+
+	void Imgui();
+
 	FTimerHandle MyTimerHandle;
 	UWorld* World;
 
@@ -43,6 +48,8 @@ private:
 		FirstBounds = FVector::ZeroVector,
 		SecondBounds = FVector::ZeroVector,
 		CentreBounds = FVector::ZeroVector;
+
+	APlayerController* PC;
 
 	float BoundsBuffer = 1000.f;
 

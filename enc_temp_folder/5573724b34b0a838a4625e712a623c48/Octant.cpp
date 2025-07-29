@@ -31,12 +31,9 @@ Octant::Octant(
 
 	//if exeeds max nodes subdivide and pass nodes to them to do thier thing
 
-	//DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, BoxColour);
-
 	if (NodeList.Num() > MaxNodesPerOctant) {
 		SubdivideTree();
 	}
-
 
 }
 

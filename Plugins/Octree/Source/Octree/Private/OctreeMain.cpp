@@ -308,28 +308,10 @@ void AOctreeMain::Tick(float DeltaTime)
 	if (GetWorld() && GetWorld()->IsGameWorld()) {
 		Super::Tick(DeltaTime);
 		RebuildTree();
-
-		//if (GEngine)
-		//	GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Yellow, TEXT("subdivided in main"));
-
-		//if (GEngine)
-		//	GEngine->AddOnScreenDebugMessage(2, 15.0f, FColor::Yellow, FString::Printf(TEXT("node amount: %d, MaxNodesPerOctant %d"), NodeList.Num(), MaxNodesPerOctant));
 	}
-
-	//UE_LOG(LogTemp, Warning, TEXT("editor tick"));
-
-
 
 #if WITH_EDITOR
 	DrawBox();
-
-	//if (GEngine)
-	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("tick within WITH_EDITOR"));
-	//if (subdevided) {
-	//	for (TUniquePtr<Octant>& octant : Octants) {
-	//		if (octant) octant->Tick();
-	//	}
-	//}
 #endif
 }
 

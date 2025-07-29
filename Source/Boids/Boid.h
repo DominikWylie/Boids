@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 
 #include "OctreeInterface.h"
+#include "ImGuiModifier.h"
 
 #include "Boid.generated.h"
 
@@ -24,7 +25,8 @@ public:
 		const TObjectPtr<AOctreeMain>& Octree, 
 		const FVector& FirstBounds, 
 		const FVector& Secondbounds,
-		const FVector& CentreBounds);
+		const FVector& CentreBounds,
+		ImGuiModifier* imguiMods);
 
 	UPROPERTY(EditAnywhere)
 	float Speed = 1300.f;
@@ -50,17 +52,19 @@ public:
 private:
 	
 	float
-		VisualRange = 1000.f,
-		ProtectedRange = 450.f,
 		BoundsTurningSpeed = 3.f,
-		GeneralTurningSpeed = 3.f,
 		Acceleration = 0.1f,
 		SpeedTolerance = 0.3f;
 
-	float 
-		CenteringFactor = 1.f,
-		MatchingFactor = 1.f,
-		AvoidBoidsFactor = 1.f;
+	ImGuiModifier* ImGuiMods;
+
+	//float 
+	//	*CenteringFactor,
+	//	*MatchingFactor,
+	//	*AvoidBoidsFactor,
+	//	*GeneralTurningSpeed,
+	//	*ProtectedRange,
+	//	*VisualRange;
 
 	FVector
 		UpperBounds = FVector::ZeroVector,

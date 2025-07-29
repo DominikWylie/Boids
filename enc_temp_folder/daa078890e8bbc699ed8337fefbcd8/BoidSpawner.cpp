@@ -8,7 +8,6 @@
 #include "imgui.h"
 #include "ImGuiInputHandler.h"
 #include "ImGuiModule.h"
-#include <string>
 //#include "OctreeInterface.h"
 
 // Sets default values
@@ -52,7 +51,7 @@ void ABoidSpawner::Spawn()
 	}
 
 	//ill keep the octree getter but this was made just to avoid overloading the machine
-	if (BoidCount > 600) {
+	if (Octree->GetNodeNum() > 100) {
 		return;
 	}
 
@@ -91,8 +90,7 @@ void ABoidSpawner::Imgui()
 		ImGui::SetNextWindowCollapsed(false);
 	}
 
-	DrawDebugSphere(GetWorld(), CentreBounds, ImGuiMods.ProtectedRange, 10, FColor::Red);
-	DrawDebugSphere(GetWorld(), CentreBounds, ImGuiMods.VisualRange, 10, FColor::Green);
+	int y = 7;
 
 	if (ImGui::Begin("When will you wear wigs", nullptr, ImGuiWindowFlags_MenuBar)) {
 		if (ImGui::BeginMenuBar()) {
@@ -104,15 +102,13 @@ void ABoidSpawner::Imgui()
 		}
 		ImGui::EndMenuBar();
 
-		ImGui::Text(std::to_string(BoidCount).c_str());
-
 		ImGui::SliderFloat("Centering factor", &ImGuiMods.CenteringFactor, 0.f, 10.f);
 		ImGui::SliderFloat("Matching factor", &ImGuiMods.MatchingFactor, 0.f, 10.f);
 		ImGui::SliderFloat("Avoidance factor", &ImGuiMods.AvoidBoidsFactor, 0.f, 10.f);
 		ImGui::SliderFloat("General turning speed", &ImGuiMods.GeneralTurningSpeed, 0.f, 10.f);
 
-		ImGui::SliderFloat("Visual range", &ImGuiMods.VisualRange, 0.f, 1000.f);
-		ImGui::SliderFloat("Protected range", &ImGuiMods.ProtectedRange, 0.f, 1000.f);
+		ImGui::SliderFloat("Visual range", &ImGuiMods.VisualRange, 0.f, 10.f);
+		ImGui::SliderFloat("Protected range", &ImGuiMods.ProtectedRange, 0.f, 10.f);
 	}
 
 
