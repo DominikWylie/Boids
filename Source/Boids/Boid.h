@@ -49,14 +49,18 @@ public:
 
 private:
 	
-	float 
-		VisualRange = 2000.f, 
-		ProtectedRange = 200.f,
+	float
+		VisualRange = 1000.f,
+		ProtectedRange = 450.f,
 		BoundsTurningSpeed = 3.f,
 		GeneralTurningSpeed = 3.f,
 		Acceleration = 0.1f,
-		SpeedTolerance = 0.3f,
-		AvoidBoidsFactor = .5f;
+		SpeedTolerance = 0.3f;
+
+	float 
+		CenteringFactor = 1.f,
+		MatchingFactor = 1.f,
+		AvoidBoidsFactor = 1.f;
 
 	FVector
 		UpperBounds = FVector::ZeroVector,

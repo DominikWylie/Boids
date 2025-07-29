@@ -41,6 +41,9 @@ void ABoid::Tick(float DeltaTime)
 		//rotate then translate
 		SetActorLocation(GetActorLocation() + (GetActorForwardVector() * Speed * DeltaTime));
 	}
+
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), ProtectedRange, 10, FColor::Red);
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), VisualRange, 10, FColor::Green);
 }
 
 FVector ABoid::GetPosition() const
@@ -65,23 +68,23 @@ void ABoid::Kill()
 
 void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 {
-	FRotator Rotation = GetActorRotation();
-	FVector Location = GetActorLocation();
-	FQuat CurrentQuat = GetActorQuat();
+	FRotator ActorRotation = GetActorRotation();
+	FVector ActorLocation = GetActorLocation();
+	FQuat CurrentActorQuat = GetActorQuat();
 
-	if (Location.X > UpperBounds.X ||
-		Location.Y > UpperBounds.Y ||
-		Location.Z > UpperBounds.Z ||
-		Location.X < LowerBounds.X ||
-		Location.Y < LowerBounds.Y ||
-		Location.Z < LowerBounds.Z) 
+	if (ActorLocation.X > UpperBounds.X ||
+		ActorLocation.Y > UpperBounds.Y ||
+		ActorLocation.Z > UpperBounds.Z ||
+		ActorLocation.X < LowerBounds.X ||
+		ActorLocation.Y < LowerBounds.Y ||
+		ActorLocation.Z < LowerBounds.Z) 
 	{
 		FVector BoundsTargetDirection = CentreOfBounds - GetActorLocation();
 		BoundsTargetDirection.Normalize();
 
 		FQuat BoundsTargetQuat = BoundsTargetDirection.Rotation().Quaternion();
 
-		FQuat BoundsNewDirection = FQuat::Slerp(CurrentQuat, BoundsTargetQuat, BoundsTurningSpeed * dt);
+		FQuat BoundsNewDirection = FQuat::Slerp(CurrentActorQuat, BoundsTargetQuat, BoundsTurningSpeed * dt);
 
 		BoundsNewDirection.Normalize();
 
@@ -106,7 +109,7 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 
 	for (IOctreeInterface*& boid : Boids) {
 		FVector boidPosition = boid->GetPosition();
-		double BoidDistanceSquared = FVector::DistSquared(boidPosition, Location);
+		double BoidDistanceSquared = FVector::DistSquared(boidPosition, ActorLocation);
 
 		//only care about within visual range and not protected range
 		if (BoidDistanceSquared < VisualRangeSquared && BoidDistanceSquared > ProtectedRangeSquared) {
@@ -122,7 +125,7 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 		}
 		else if (BoidDistanceSquared < ProtectedRangeSquared) {
 			//seperation
-			CloseBoidPositionAverage += Location - boidPosition;
+			CloseBoidPositionAverage += ActorLocation - boidPosition;
 		}
 
 
@@ -130,16 +133,19 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 
 	if (NeighboringBoids > 0) {
 		//expensive
-		PositionAverage /= NeighboringBoids;
-		ForwardAverage /= NeighboringBoids;
+		PositionAverage = ((PositionAverage / NeighboringBoids) - ActorLocation) * CenteringFactor;
+		ForwardAverage = ForwardAverage.GetSafeNormal() * MatchingFactor;
 		SpeedAverage /= NeighboringBoids;
 
 		CloseBoidPositionAverage *= AvoidBoidsFactor;
 
-		//TargetDirection = (PositionAverage + ForwardAverage + CloseBoidPositionAverage) * .33f;
+		TargetDirection = (PositionAverage + ForwardAverage + CloseBoidPositionAverage) * .33333f;
 
 		//i think its always going up is cos forard average is normalised and position average is not
-		TargetDirection = (PositionAverage + ForwardAverage) * .5f;
+		//TargetDirection = (PositionAverage + ForwardAverage) * .5f;
+		//TargetDirection = PositionAverage;
+		//TargetDirection = ForwardAverage;
+
 
 		//maybe change speed depending on if target direction is further away than a caertaiun area 
 		// but would mess with the boids on the edges
@@ -158,7 +164,7 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 
 		FQuat TargetQuat = TargetDirection.Rotation().Quaternion();
 
-		FQuat NewDirection = FQuat::Slerp(CurrentQuat, TargetQuat, GeneralTurningSpeed * dt);
+		FQuat NewDirection = FQuat::Slerp(CurrentActorQuat, TargetQuat, GeneralTurningSpeed * dt);
 		//FQuat NewDirection = FQuat::FastLerp(CurrentQuat, TargetQuat, GeneralTurningSpeed * dt);
 
 		SetActorRotation(NewDirection);
