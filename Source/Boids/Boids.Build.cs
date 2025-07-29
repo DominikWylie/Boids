@@ -14,6 +14,14 @@ public class Boids : ModuleRules
 
         PublicIncludePaths.AddRange(new string[] { "Octree/Public", "Octree/Private" });
 
+        PrivateDefinitions.Add(string.Format("IMPLOT_API=DLLIMPORT"));
+
+        if (Target.Configuration != UnrealTargetConfiguration.Shipping)
+        {
+            PrivateDependencyModuleNames.Add("ImGui");
+            PublicDependencyModuleNames.Add("ImGui");
+        }
+
         // Uncomment if you are using Slate UI
         // PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 

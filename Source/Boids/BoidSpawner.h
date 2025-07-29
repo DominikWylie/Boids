@@ -26,6 +26,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<ABoid> BoidBlueprint;
 
+
+
 protected:
 	virtual void BeginPlay() override;
 

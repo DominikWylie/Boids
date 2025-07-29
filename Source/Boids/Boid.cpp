@@ -108,6 +108,8 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 	uint16 NeighboringBoids = 0;
 
 	for (IOctreeInterface*& boid : Boids) {
+		if (boid == this) continue;
+
 		FVector boidPosition = boid->GetPosition();
 		double BoidDistanceSquared = FVector::DistSquared(boidPosition, ActorLocation);
 
