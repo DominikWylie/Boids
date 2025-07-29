@@ -52,7 +52,7 @@ void ABoidSpawner::Spawn()
 	}
 
 	//ill keep the octree getter but this was made just to avoid overloading the machine
-	if (BoidCount > 600) {
+	if (BoidCount > 400) {
 		return;
 	}
 
@@ -110,9 +110,10 @@ void ABoidSpawner::Imgui()
 		ImGui::SliderFloat("Matching factor", &ImGuiMods.MatchingFactor, 0.f, 10.f);
 		ImGui::SliderFloat("Avoidance factor", &ImGuiMods.AvoidBoidsFactor, 0.f, 10.f);
 		ImGui::SliderFloat("General turning speed", &ImGuiMods.GeneralTurningSpeed, 0.f, 10.f);
+		ImGui::SliderFloat("Boids speed", &ImGuiMods.Speed, 0.f, 10000.f);
 
-		ImGui::SliderFloat("Visual range", &ImGuiMods.VisualRange, 0.f, 1000.f);
-		ImGui::SliderFloat("Protected range", &ImGuiMods.ProtectedRange, 0.f, 1000.f);
+		ImGui::SliderFloat("Visual range", &ImGuiMods.VisualRange, 0.f, 3000.f);
+		ImGui::SliderFloat("Protected range", &ImGuiMods.ProtectedRange, 0.f, 3000.f);
 	}
 
 

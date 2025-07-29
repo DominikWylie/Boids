@@ -48,7 +48,7 @@ void ABoid::Tick(float DeltaTime)
 	
 	if (move) {
 		//rotate then translate
-		SetActorLocation(GetActorLocation() + (GetActorForwardVector() * Speed * DeltaTime));
+		SetActorLocation(GetActorLocation() + (GetActorForwardVector() * ImGuiMods->Speed * DeltaTime));
 	}
 
 	//DrawDebugSphere(GetWorld(), GetActorLocation(), ProtectedRange, 10, FColor::Red);
