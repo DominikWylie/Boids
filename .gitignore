@@ -75,3 +75,5 @@ Plugins/**/Intermediate/*
 DerivedDataCache/*
 
 Content/StarterContent/*
+
+enc_temp_folder/
