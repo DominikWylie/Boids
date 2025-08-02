@@ -29,7 +29,7 @@ void ABoidSpawner::BeginPlay()
 	PC = GetWorld()->GetFirstPlayerController();
 
 	if (World) {
-		World->GetTimerManager().SetTimer(MyTimerHandle, this, &ABoidSpawner::Spawn, 0.1f, true);
+		World->GetTimerManager().SetTimer(MyTimerHandle, this, &ABoidSpawner::Spawn, 0.01f, true);
 	}
 
 	Octree = Cast<AOctreeMain>(UGameplayStatics::GetActorOfClass(World, AOctreeMain::StaticClass()));
@@ -51,8 +51,7 @@ void ABoidSpawner::Spawn()
 		return;
 	}
 
-	//ill keep the octree getter but this was made just to avoid overloading the machine
-	if (BoidCount > 60) {
+	if (Octree->GetNodeNum() > ImGuiMods.BoidMax) {
 		return;
 	}
 
@@ -63,7 +62,13 @@ void ABoidSpawner::Spawn()
 		BoidRotation.Pitch = FMath::RandRange(-180, 180);
 		BoidRotation.Roll = 0.f;
 
-		AActor* SpawnedBoid = World->SpawnActor<ABoid>(BoidBlueprint, GetActorLocation(), BoidRotation);
+		FVector SpawnLocation;
+		SpawnLocation.X = FMath::RandRange(Octree->SecondCorner.X, Octree->FirstCorner.X);
+		SpawnLocation.Y = FMath::RandRange(Octree->SecondCorner.Y, Octree->FirstCorner.Y);
+		SpawnLocation.Z = FMath::RandRange(Octree->SecondCorner.Z, Octree->FirstCorner.Z);
+
+
+		AActor* SpawnedBoid = World->SpawnActor<ABoid>(BoidBlueprint, SpawnLocation, BoidRotation);
 
 		ABoid* Boid = Cast<ABoid>(SpawnedBoid);
 		if (Boid) {
@@ -80,8 +85,6 @@ void ABoidSpawner::Spawn()
 
 		Octree->AddNode(BoidsInterface);
 	}
-
-	BoidCount++;
 }
 
 void ABoidSpawner::Imgui()
@@ -91,8 +94,12 @@ void ABoidSpawner::Imgui()
 		ImGui::SetNextWindowCollapsed(false);
 	}
 
-	DrawDebugSphere(GetWorld(), CentreBounds, ImGuiMods.ProtectedRange, 10, FColor::Red);
-	DrawDebugSphere(GetWorld(), CentreBounds, ImGuiMods.VisualRange, 10, FColor::Green);
+	ImGui::SetNextWindowBgAlpha(0.3f);
+
+	if (ShowVisualRangeSpheres) {
+		DrawDebugSphere(GetWorld(), CentreBounds, ImGuiMods.ProtectedRange, 10, FColor::Red);
+		DrawDebugSphere(GetWorld(), CentreBounds, ImGuiMods.VisualRange, 10, FColor::Green);
+	}
 
 	if (ImGui::Begin("When will you wear wigs", nullptr, ImGuiWindowFlags_MenuBar)) {
 		if (ImGui::BeginMenuBar()) {
@@ -105,19 +112,31 @@ void ABoidSpawner::Imgui()
 			if (ImGui::Button("Save")) {
 				ImGuiMods.Save();
 			}
+
+			if (ImGui::Button("Load")) {
+				ImGuiMods.Load();
+			}
+
+			if (ImGui::Button("Toggle visual range")) {
+				ShowVisualRangeSpheres = !ShowVisualRangeSpheres;
+			}
 		}
 		ImGui::EndMenuBar();
 
-		ImGui::Text(std::to_string(BoidCount).c_str());
+		ImGui::Text(std::to_string(Octree->GetNodeNum()).c_str());
 
 		ImGui::SliderFloat("Centering factor", &ImGuiMods.CenteringFactor, 0.f, 10.f);
-		ImGui::SliderFloat("Matching factor", &ImGuiMods.MatchingFactor, 0.f, 10.f);
+		ImGui::SliderFloat("Matching factor", &ImGuiMods.MatchingFactor, 0.f, 100.f);
 		ImGui::SliderFloat("Avoidance factor", &ImGuiMods.AvoidBoidsFactor, 0.f, 10.f);
 		ImGui::SliderFloat("General turning speed", &ImGuiMods.GeneralTurningSpeed, 0.f, 10.f);
 		ImGui::SliderFloat("Boids speed", &ImGuiMods.Speed, 0.f, 10000.f);
 
-		ImGui::SliderFloat("Visual range", &ImGuiMods.VisualRange, 0.f, 3000.f);
-		ImGui::SliderFloat("Protected range", &ImGuiMods.ProtectedRange, 0.f, 3000.f);
+		ImGui::SliderFloat("Visual range", &ImGuiMods.VisualRange, 0.f, 10000.f);
+		ImGui::SliderFloat("Protected range", &ImGuiMods.ProtectedRange, 0.f, 7000.f);
+
+		if (ImGui::SliderInt("Boid max", &ImGuiMods.BoidMax, 0.f, 1000.f)) {
+			Octree->ReduceNodes(ImGuiMods.BoidMax);
+		}
 	}
 
 

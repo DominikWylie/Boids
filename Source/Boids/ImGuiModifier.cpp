@@ -31,6 +31,7 @@ void ImGuiModifier::Save()
     file << "Speed=" << Speed << "\n";
     file << "ProtectedRange=" << ProtectedRange << "\n";
     file << "VisualRange=" << VisualRange << "\n";
+    file << "BoidMax=" << BoidMax << "\n";
 
     file.close();
 }
@@ -58,6 +59,7 @@ void ImGuiModifier::Load()
                 else if (key == "Speed") Speed = value;
                 else if (key == "ProtectedRange") ProtectedRange = value;
                 else if (key == "VisualRange") VisualRange = value;
+                else if (key == "BoidMax") BoidMax = value;
 
             }
         }

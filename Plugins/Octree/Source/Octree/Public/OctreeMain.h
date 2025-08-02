@@ -38,11 +38,12 @@ public:
 	bool bBoundingBoxVisibiliy = true;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
-	uint8 MaxNodesPerOctant = 1;
+	uint8 MaxNodesPerOctant = 6;
 
 	void AddNode(IOctreeInterface* Node);
+	void ReduceNodes(int32 NewMax);
 
-	uint32 GetNodeNum() const { return NodeList.Num(); }
+	int32 GetNodeNum() const { return NodeList.Num(); }
 
 	//overload if other shapes needed
 	TArray<IOctreeInterface*> NodeQuery(const FVector& Centre, float Extent);

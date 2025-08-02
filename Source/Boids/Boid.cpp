@@ -144,13 +144,22 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 
 	if (NeighboringBoids > 0) {
 
+		//PositionAverage = ((PositionAverage / NeighboringBoids) - ActorLocation) * ImGuiMods->CenteringFactor;
+		////ForwardAverage = ForwardAverage.GetSafeNormal() * ImGuiMods->MatchingFactor;
+		//ForwardAverage = ForwardAverage * ImGuiMods->MatchingFactor;
+		//SpeedAverage /= NeighboringBoids;
+
 		PositionAverage = ((PositionAverage / NeighboringBoids) - ActorLocation) * ImGuiMods->CenteringFactor;
-		ForwardAverage = ForwardAverage.GetSafeNormal() * ImGuiMods->MatchingFactor;
-		SpeedAverage /= NeighboringBoids;
+		//ForwardAverage = ForwardAverage.GetSafeNormal() * ImGuiMods->MatchingFactor;
+		ForwardAverage = ForwardAverage;
+		//SpeedAverage /= NeighboringBoids;
 
 		CloseBoidPositionAverage *= ImGuiMods->AvoidBoidsFactor;
 
-		TargetDirection = (PositionAverage + ForwardAverage + CloseBoidPositionAverage) * .33333f;
+		//TargetDirection = (PositionAverage + ForwardAverage + CloseBoidPositionAverage) * .33333f;
+
+		TargetDirection = ((PositionAverage * ImGuiMods->CenteringFactor) + (ForwardAverage * ImGuiMods->MatchingFactor) + (CloseBoidPositionAverage * ImGuiMods->AvoidBoidsFactor)) * .33333f;
+		TargetDirection = TargetDirection.GetSafeNormal();
 
 		//i think its always going up is cos forard average is normalised and position average is not
 		//TargetDirection = (PositionAverage + ForwardAverage) * .5f;
@@ -175,8 +184,14 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 
 		FQuat TargetQuat = TargetDirection.Rotation().Quaternion();
 
+		float AngleDiff = CurrentActorQuat.AngularDistance(TargetQuat) * ImGuiMods->GeneralTurningSpeed;
+
+		float DynamicAlpha = FMath::Clamp(AngleDiff * ImGuiMods->GeneralTurningSpeed, 0.0f, 2.0f);
+
 		//FQuat NewDirection = FQuat::Slerp(CurrentActorQuat, TargetQuat, ImGuiMods->GeneralTurningSpeed * dt);
-		FQuat NewDirection = FQuat::FastLerp(CurrentActorQuat, TargetQuat, ImGuiMods->GeneralTurningSpeed * dt);
+		//FQuat NewDirection = FQuat::FastLerp(CurrentActorQuat, TargetQuat, DynamicAlpha * dt);
+
+		FQuat NewDirection = FQuat::FastLerp(CurrentActorQuat, TargetQuat, AngleDiff * dt);
 
 		SetActorRotation(NewDirection);
 	}

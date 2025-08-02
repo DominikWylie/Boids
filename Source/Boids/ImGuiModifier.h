@@ -14,6 +14,7 @@ struct ImGuiModifier
 	float Speed = 2507.f;
 	float ProtectedRange = 250.f;
 	float VisualRange = 1160.f;
+	int32 BoidMax = 200;
 
 	ImGuiModifier();
 

@@ -27,8 +27,6 @@ void AOctreeMain::AddNode(IOctreeInterface* Node)
 	//FVector NodePosition = Node->GetPosition();
 
 	if (!IsWithinArea(Node->GetPosition())) {
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("node out of area"));
 		Node->Kill();
 		return;
 	}
@@ -47,6 +45,14 @@ void AOctreeMain::AddNode(IOctreeInterface* Node)
 	//	if (GEngine)
 	//		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("subdevided"));
 	//}
+}
+
+void AOctreeMain::ReduceNodes(int32 NewMax)
+{
+	while (NodeList.Num() > NewMax) {
+		NodeList.Last()->Kill();
+		NodeList.Pop();
+	}
 }
 
 void AOctreeMain::OnConstruction(const FTransform& Transform)

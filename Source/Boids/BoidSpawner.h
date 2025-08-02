@@ -53,5 +53,5 @@ private:
 
 	float BoundsBuffer = 1000.f;
 
-	int32 BoidCount = 0;
+	bool ShowVisualRangeSpheres = false;
 };
