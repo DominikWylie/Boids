@@ -175,8 +175,8 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 
 		FQuat TargetQuat = TargetDirection.Rotation().Quaternion();
 
-		FQuat NewDirection = FQuat::Slerp(CurrentActorQuat, TargetQuat, ImGuiMods->GeneralTurningSpeed * dt);
-		//FQuat NewDirection = FQuat::FastLerp(CurrentQuat, TargetQuat, GeneralTurningSpeed * dt);
+		//FQuat NewDirection = FQuat::Slerp(CurrentActorQuat, TargetQuat, ImGuiMods->GeneralTurningSpeed * dt);
+		FQuat NewDirection = FQuat::FastLerp(CurrentActorQuat, TargetQuat, ImGuiMods->GeneralTurningSpeed * dt);
 
 		SetActorRotation(NewDirection);
 	}

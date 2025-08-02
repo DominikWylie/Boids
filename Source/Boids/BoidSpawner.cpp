@@ -52,7 +52,7 @@ void ABoidSpawner::Spawn()
 	}
 
 	//ill keep the octree getter but this was made just to avoid overloading the machine
-	if (BoidCount > 400) {
+	if (BoidCount > 60) {
 		return;
 	}
 
@@ -100,6 +100,10 @@ void ABoidSpawner::Imgui()
 				FImGuiModule::Get().GetProperties().ToggleInput();
 				ImGui::SetWindowCollapsed(true);
 				PC->SetInputMode(FInputModeGameOnly());
+			}
+
+			if (ImGui::Button("Save")) {
+				ImGuiMods.Save();
 			}
 		}
 		ImGui::EndMenuBar();
