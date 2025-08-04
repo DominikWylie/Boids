@@ -28,8 +28,8 @@ public:
 		const FVector& CentreBounds,
 		ImGuiModifier* imguiMods);
 
-	UPROPERTY(EditAnywhere)
-	float Speed = 1300.f;
+	//UPROPERTY(EditAnywhere)
+	//float Speed = 1300.f;
 
 protected:
 	// Called when the game starts or when spawned
@@ -51,12 +51,14 @@ public:
 
 private:
 	
-	float
-		BoundsTurningSpeed = 3.f,
-		Acceleration = 0.1f,
-		SpeedTolerance = 0.3f;
-
 	ImGuiModifier* ImGuiMods;
+
+	const float BoundsTurningSpeed = 3.f;
+
+	float SpeedDifference = 0.f;
+	const float Acceleration = 0.1f;
+	//the precentage difference from the default speed allowed
+	const float MaxMinSpeedPercent = .2f;
 
 	//float 
 	//	*CenteringFactor,

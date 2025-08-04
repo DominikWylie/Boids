@@ -54,4 +54,8 @@ private:
 	float BoundsBuffer = 1000.f;
 
 	bool ShowVisualRangeSpheres = false;
+
+	//temp boid for watching values
+
+	ABoid* BoidWatch;
 };

@@ -48,7 +48,7 @@ void ABoid::Tick(float DeltaTime)
 	
 	if (move) {
 		//rotate then translate
-		SetActorLocation(GetActorLocation() + (GetActorForwardVector() * ImGuiMods->Speed * DeltaTime));
+		SetActorLocation(GetActorLocation() + (GetActorForwardVector() * (ImGuiMods->Speed + SpeedDifference) * DeltaTime));
 	}
 
 	//DrawDebugSphere(GetWorld(), GetActorLocation(), ProtectedRange, 10, FColor::Red);
@@ -67,7 +67,7 @@ FVector ABoid::GetForwardVector() const
 
 float ABoid::GetSpeed() const
 {
-	return Speed;
+	return ImGuiMods->Speed + SpeedDifference;
 }
 
 void ABoid::Kill()
@@ -77,9 +77,9 @@ void ABoid::Kill()
 
 void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 {
-	FRotator ActorRotation = GetActorRotation();
-	FVector ActorLocation = GetActorLocation();
-	FQuat CurrentActorQuat = GetActorQuat();
+	const FRotator ActorRotation = GetActorRotation();
+	const FVector ActorLocation = GetActorLocation();
+	const FQuat CurrentActorQuat = GetActorQuat();
 
 	if (ActorLocation.X > UpperBounds.X ||
 		ActorLocation.Y > UpperBounds.Y ||
@@ -93,8 +93,11 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 
 		FQuat BoundsTargetQuat = BoundsTargetDirection.Rotation().Quaternion();
 
-		FQuat BoundsNewDirection = FQuat::Slerp(CurrentActorQuat, BoundsTargetQuat, BoundsTurningSpeed * dt);
+		BoundsTargetQuat.X = 0;
 
+		FQuat BoundsNewDirection = FQuat::FastLerp(CurrentActorQuat, BoundsTargetQuat, BoundsTurningSpeed * dt);
+
+		BoundsNewDirection.X = 0;
 		BoundsNewDirection.Normalize();
 
 		SetActorRotation(BoundsNewDirection);
@@ -144,31 +147,39 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 
 	if (NeighboringBoids > 0) {
 
-		//PositionAverage = ((PositionAverage / NeighboringBoids) - ActorLocation) * ImGuiMods->CenteringFactor;
-		////ForwardAverage = ForwardAverage.GetSafeNormal() * ImGuiMods->MatchingFactor;
-		//ForwardAverage = ForwardAverage * ImGuiMods->MatchingFactor;
-		//SpeedAverage /= NeighboringBoids;
-
 		PositionAverage = ((PositionAverage / NeighboringBoids) - ActorLocation) * ImGuiMods->CenteringFactor;
-		//ForwardAverage = ForwardAverage.GetSafeNormal() * ImGuiMods->MatchingFactor;
-		ForwardAverage = ForwardAverage;
 		//SpeedAverage /= NeighboringBoids;
-
-		CloseBoidPositionAverage *= ImGuiMods->AvoidBoidsFactor;
-
-		//TargetDirection = (PositionAverage + ForwardAverage + CloseBoidPositionAverage) * .33333f;
 
 		TargetDirection = ((PositionAverage * ImGuiMods->CenteringFactor) + (ForwardAverage * ImGuiMods->MatchingFactor) + (CloseBoidPositionAverage * ImGuiMods->AvoidBoidsFactor)) * .33333f;
+		
+		if (FVector::DistSquared(ActorLocation, TargetDirection) < ImGuiMods->ProtectedRange) {
+			if (FVector::DotProduct(GetActorForwardVector(), TargetDirection) > 0.01) {
+				SpeedDifference -= Acceleration;
+			}
+			else {
+				SpeedDifference += Acceleration;
+			}
+		}
+		else {
+			if (FVector::DotProduct(GetActorForwardVector(), TargetDirection) > 0.01) {
+				SpeedDifference += Acceleration;
+			}
+			else {
+				SpeedDifference -= Acceleration;
+			}
+		}
+
+		if (ImGuiMods->Speed + SpeedDifference > ImGuiMods->Speed + (ImGuiMods->Speed * MaxMinSpeedPercent)) {
+			SpeedDifference = (ImGuiMods->Speed * MaxMinSpeedPercent) - 0.001f;
+		}
+		//speeddifference will be negative if reducing speed
+		else if (ImGuiMods->Speed + SpeedDifference < ImGuiMods->Speed - (ImGuiMods->Speed * MaxMinSpeedPercent)) {
+			SpeedDifference = (ImGuiMods->Speed * MaxMinSpeedPercent) + 0.001f;
+		}
+
+		//if(TargetDirection - ActorLocation)
+		
 		TargetDirection = TargetDirection.GetSafeNormal();
-
-		//i think its always going up is cos forard average is normalised and position average is not
-		//TargetDirection = (PositionAverage + ForwardAverage) * .5f;
-		//TargetDirection = PositionAverage;
-		//TargetDirection = ForwardAverage;
-
-
-		//maybe change speed depending on if target direction is further away than a caertaiun area 
-		// but would mess with the boids on the edges
 
 		//if ((Speed - SpeedAverage) > SpeedTolerance) {
 		//	Speed += Acceleration;
@@ -179,17 +190,9 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 
 		//TargetDirection = PositionAverage;
 
-		//move
-		TargetDirection.Normalize();
-
 		FQuat TargetQuat = TargetDirection.Rotation().Quaternion();
 
 		float AngleDiff = CurrentActorQuat.AngularDistance(TargetQuat) * ImGuiMods->GeneralTurningSpeed;
-
-		float DynamicAlpha = FMath::Clamp(AngleDiff * ImGuiMods->GeneralTurningSpeed, 0.0f, 2.0f);
-
-		//FQuat NewDirection = FQuat::Slerp(CurrentActorQuat, TargetQuat, ImGuiMods->GeneralTurningSpeed * dt);
-		//FQuat NewDirection = FQuat::FastLerp(CurrentActorQuat, TargetQuat, DynamicAlpha * dt);
 
 		FQuat NewDirection = FQuat::FastLerp(CurrentActorQuat, TargetQuat, AngleDiff * dt);
 

@@ -71,7 +71,7 @@ void ABoidSpawner::Spawn()
 		AActor* SpawnedBoid = World->SpawnActor<ABoid>(BoidBlueprint, SpawnLocation, BoidRotation);
 
 		ABoid* Boid = Cast<ABoid>(SpawnedBoid);
-		if (Boid) {
+		if (IsValid(Boid)) {
 			Boid->initialise(
 				Octree,
 				FirstBounds,
@@ -79,6 +79,10 @@ void ABoidSpawner::Spawn()
 				CentreBounds,
 				&ImGuiMods
 			);
+
+			if (!IsValid(BoidWatch)) {
+				BoidWatch = Boid;
+			}
 		}
 
 		IOctreeInterface* BoidsInterface = Cast<IOctreeInterface>(SpawnedBoid);
@@ -150,6 +154,8 @@ void ABoidSpawner::Tick(float DeltaTime)
 
 	Imgui();
 
+	//if (GEngine && IsValid(BoidWatch))
+	//	GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Green, FString::Printf(TEXT("boidwatch speed: %f"), BoidWatch->GetSpeed()));
 
 	//DrawDebugBox(World, ((SecondBounds - GetActorLocation()) + (FirstBounds - GetActorLocation())) / 2, (FirstBounds - SecondBounds) / 2, FColor::Green);
 	DrawDebugBox(World, (SecondBounds + FirstBounds) * 0.5f, (FirstBounds - SecondBounds) * 0.5f, FColor::Green);
