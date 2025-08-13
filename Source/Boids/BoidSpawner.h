@@ -17,6 +17,10 @@ class BOIDS_API ABoidSpawner : public AActor
 	GENERATED_BODY()
 
 public:
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
+	bool bBoundingBoxVisibiliy = true;
+
 	ABoidSpawner();
 
 	virtual void Tick(float DeltaTime) override;

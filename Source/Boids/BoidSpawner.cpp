@@ -152,5 +152,6 @@ void ABoidSpawner::Tick(float DeltaTime)
 
 
 	//DrawDebugBox(World, ((SecondBounds - GetActorLocation()) + (FirstBounds - GetActorLocation())) / 2, (FirstBounds - SecondBounds) / 2, FColor::Green);
-	DrawDebugBox(World, (SecondBounds + FirstBounds) * 0.5f, (FirstBounds - SecondBounds) * 0.5f, FColor::Green);
+	if(bBoundingBoxVisibiliy)
+		DrawDebugBox(World, (SecondBounds + FirstBounds) * 0.5f, (FirstBounds - SecondBounds) * 0.5f, FColor::Green);
 }
