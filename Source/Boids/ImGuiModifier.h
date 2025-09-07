@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 struct BoidPreset {
 	//keep the default values above for safety 
@@ -27,7 +28,7 @@ struct ImGuiModifier
 	void Load();
 
 	//set and forget, this pointer changes when presets are swapped
-	const std::shared_ptr<std::shared_ptr<BoidPreset>> GetCurrentPreset();
+	const std::shared_ptr<const std::shared_ptr<const BoidPreset>> GetCurrentPreset() const;
 
 	const std::vector<std::string>& GetPresetNames() const{ return presetNames; }
 	void SetCurrentPreset(std::string newPreset);
@@ -43,6 +44,6 @@ private:
 
 	std::vector<std::string> presetNames;
 
-	std::shared_ptr<BoidPreset> currentPreset = std::make_shared<BoidPreset>();
+	std::shared_ptr<std::shared_ptr<BoidPreset>> currentPresetPtr;
 };
 

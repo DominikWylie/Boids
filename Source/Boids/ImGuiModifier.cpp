@@ -62,10 +62,10 @@ void ImGuiModifier::Save()
 }
 
 void ImGuiModifier::SetCurrentPreset(std::string newPreset)
-{
+{/*
 	if (presets.find(newPreset) != presets.end()) {
 		currentPreset = &presets[newPreset];
-	}
+	}*/
 }
 
 void ImGuiModifier::NewLoadTemp() {
@@ -172,7 +172,7 @@ void ImGuiModifier::Load()
 	file.close();*/
 }
 
-const std::shared_ptr<std::shared_ptr<BoidPreset>> ImGuiModifier::GetCurrentPreset()
+const std::shared_ptr< std::shared_ptr<const BoidPreset>> ImGuiModifier::GetCurrentPreset() const
 {
-	return const std::shared_ptr<BoidPreset>(currentPreset);
+	return currentPresetPtr;
 }
