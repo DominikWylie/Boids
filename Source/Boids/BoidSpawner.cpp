@@ -89,58 +89,58 @@ void ABoidSpawner::Spawn()
 
 void ABoidSpawner::Imgui()
 {
-	if (PC->WasInputKeyJustPressed("P")) {
-		FImGuiModule::Get().GetProperties().ToggleInput();
-		ImGui::SetNextWindowCollapsed(false);
-	}
+	//if (PC->WasInputKeyJustPressed("P")) {
+	//	FImGuiModule::Get().GetProperties().ToggleInput();
+	//	ImGui::SetNextWindowCollapsed(false);
+	//}
 
-	ImGui::SetNextWindowBgAlpha(0.3f);
+	//ImGui::SetNextWindowBgAlpha(0.3f);
 
-	if (ShowVisualRangeSpheres) {
-		DrawDebugSphere(GetWorld(), CentreBounds, ImGuiMods.ProtectedRange, 10, FColor::Red);
-		DrawDebugSphere(GetWorld(), CentreBounds, ImGuiMods.VisualRange, 10, FColor::Green);
-	}
+	//if (ShowVisualRangeSpheres) {
+	//	DrawDebugSphere(GetWorld(), CentreBounds, ImGuiMods.ProtectedRange, 10, FColor::Red);
+	//	DrawDebugSphere(GetWorld(), CentreBounds, ImGuiMods.VisualRange, 10, FColor::Green);
+	//}
 
-	if (ImGui::Begin("When will you wear wigs", nullptr, ImGuiWindowFlags_MenuBar)) {
-		if (ImGui::BeginMenuBar()) {
-			if (ImGui::Button("Back to game")) {
-				FImGuiModule::Get().GetProperties().ToggleInput();
-				ImGui::SetWindowCollapsed(true);
-				PC->SetInputMode(FInputModeGameOnly());
-			}
+	//if (ImGui::Begin("When will you wear wigs", nullptr, ImGuiWindowFlags_MenuBar)) {
+	//	if (ImGui::BeginMenuBar()) {
+	//		if (ImGui::Button("Back to game")) {
+	//			FImGuiModule::Get().GetProperties().ToggleInput();
+	//			ImGui::SetWindowCollapsed(true);
+	//			PC->SetInputMode(FInputModeGameOnly());
+	//		}
 
-			if (ImGui::Button("Save")) {
-				ImGuiMods.Save();
-			}
+	//		if (ImGui::Button("Save")) {
+	//			ImGuiMods.Save();
+	//		}
 
-			if (ImGui::Button("Load")) {
-				ImGuiMods.Load();
-			}
+	//		if (ImGui::Button("Load")) {
+	//			ImGuiMods.Load();
+	//		}
 
-			if (ImGui::Button("Toggle visual range")) {
-				ShowVisualRangeSpheres = !ShowVisualRangeSpheres;
-			}
-		}
-		ImGui::EndMenuBar();
+	//		if (ImGui::Button("Toggle visual range")) {
+	//			ShowVisualRangeSpheres = !ShowVisualRangeSpheres;
+	//		}
+	//	}
+	//	ImGui::EndMenuBar();
 
-		ImGui::Text(std::to_string(Octree->GetNodeNum()).c_str());
+	//	ImGui::Text(std::to_string(Octree->GetNodeNum()).c_str());
 
-		ImGui::SliderFloat("Centering factor", &ImGuiMods.CenteringFactor, 0.f, 10.f);
-		ImGui::SliderFloat("Matching factor", &ImGuiMods.MatchingFactor, 0.f, 100.f);
-		ImGui::SliderFloat("Avoidance factor", &ImGuiMods.AvoidBoidsFactor, 0.f, 10.f);
-		ImGui::SliderFloat("General turning speed", &ImGuiMods.GeneralTurningSpeed, 0.f, 10.f);
-		ImGui::SliderFloat("Boids speed", &ImGuiMods.Speed, 0.f, 10000.f);
+	//	ImGui::SliderFloat("Centering factor", &ImGuiMods.CenteringFactor, 0.f, 10.f);
+	//	ImGui::SliderFloat("Matching factor", &ImGuiMods.MatchingFactor, 0.f, 100.f);
+	//	ImGui::SliderFloat("Avoidance factor", &ImGuiMods.AvoidBoidsFactor, 0.f, 10.f);
+	//	ImGui::SliderFloat("General turning speed", &ImGuiMods.GeneralTurningSpeed, 0.f, 10.f);
+	//	ImGui::SliderFloat("Boids speed", &ImGuiMods.Speed, 0.f, 10000.f);
 
-		ImGui::SliderFloat("Visual range", &ImGuiMods.VisualRange, 0.f, 10000.f);
-		ImGui::SliderFloat("Protected range", &ImGuiMods.ProtectedRange, 0.f, 7000.f);
+	//	ImGui::SliderFloat("Visual range", &ImGuiMods.VisualRange, 0.f, 10000.f);
+	//	ImGui::SliderFloat("Protected range", &ImGuiMods.ProtectedRange, 0.f, 7000.f);
 
-		if (ImGui::SliderInt("Boid max", &ImGuiMods.BoidMax, 0.f, 1000.f)) {
-			Octree->ReduceNodes(ImGuiMods.BoidMax);
-		}
-	}
+	//	if (ImGui::SliderInt("Boid max", &ImGuiMods.BoidMax, 0.f, 1000.f)) {
+	//		Octree->ReduceNodes(ImGuiMods.BoidMax);
+	//	}
+	//}
 
 
-	ImGui::End();
+	//ImGui::End();
 }
 
 // Called every frame
