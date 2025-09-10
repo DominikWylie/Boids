@@ -24,18 +24,13 @@ struct ImGuiModifier
 	ImGuiModifier();
 
 	void Save();
-
-	void Load();
-
+	
 	//set and forget, this pointer changes when presets are swapped
-	const std::shared_ptr<const std::shared_ptr<const BoidPreset>> GetCurrentPreset() const;
-
-	const std::vector<std::string>& GetPresetNames() const{ return presetNames; }
-	void SetCurrentPreset(std::string newPreset);
-
-	void NewLoadTemp();
+	std::shared_ptr<const BoidPreset> GetCurrentPreset() const {return currentPresetPtr;}
 
 private:
+	void Load();
+	
 	bool Initialised = false;
 
 	std::string directory = "Content/Boids/ValuePresets";
@@ -44,6 +39,6 @@ private:
 
 	std::vector<std::string> presetNames;
 
-	std::shared_ptr<std::shared_ptr<BoidPreset>> currentPresetPtr;
+	std::shared_ptr<BoidPreset> currentPresetPtr;
 };
 

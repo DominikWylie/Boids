@@ -17,6 +17,7 @@ ABoidSpawner::ABoidSpawner()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	boidPreset = ImGuiMods.GetCurrentPreset();
 }
 
 // Called when the game starts or when spawned
@@ -51,7 +52,7 @@ void ABoidSpawner::Spawn()
 		return;
 	}
 
-	if (Octree->GetNodeNum() > ImGuiMods.BoidMax) {
+	if (Octree->GetNodeNum() > boidPreset->BoidMax) {
 		return;
 	}
 
@@ -77,7 +78,7 @@ void ABoidSpawner::Spawn()
 				FirstBounds,
 				SecondBounds,
 				CentreBounds,
-				&ImGuiMods
+				boidPreset
 			);
 		}
 

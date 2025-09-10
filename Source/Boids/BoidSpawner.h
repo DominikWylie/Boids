@@ -41,6 +41,8 @@ private:
 
 	ImGuiModifier ImGuiMods;
 
+	std::shared_ptr<const BoidPreset> boidPreset;
+
 	void Imgui();
 
 	FTimerHandle MyTimerHandle;

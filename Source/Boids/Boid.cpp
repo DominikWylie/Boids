@@ -21,34 +21,32 @@ void ABoid::initialise(
 	const FVector& FBounds,
 	const FVector& Sbounds,
 	const FVector& CBounds,
-	ImGuiModifier* IGMods)
+	std::shared_ptr<const BoidPreset> BPreset)
 {
 	Octree = Otree;
 	UpperBounds = FBounds;
 	LowerBounds = Sbounds;
 	CentreOfBounds = CBounds;
 
-	ImGuiMods = IGMods;
+	boidPreset = BPreset;
 
-	check(ImGuiMods);
+	check(boidPreset);
 }
 
-// Called when the game starts or when spawned
 void ABoid::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-// Called every frame
 void ABoid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CalculateTrajectory(Octree->NodeQuery(GetActorLocation(), ImGuiMods->VisualRange), DeltaTime);
+	CalculateTrajectory(Octree->NodeQuery(GetActorLocation(), boidPreset->VisualRange), DeltaTime);
 	
 	if (move) {
 		//rotate then translate
-		SetActorLocation(GetActorLocation() + (GetActorForwardVector() * ImGuiMods->Speed * DeltaTime));
+		SetActorLocation(GetActorLocation() + (GetActorForwardVector() * boidPreset->Speed * DeltaTime));
 	}
 
 	//DrawDebugSphere(GetWorld(), GetActorLocation(), ProtectedRange, 10, FColor::Red);
@@ -107,8 +105,8 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 
 	FVector TargetDirection = FVector::ZeroVector;
 
-	double VisualRangeSquared = FMath::Square(ImGuiMods->VisualRange);
-	double ProtectedRangeSquared = FMath::Square(ImGuiMods->ProtectedRange);
+	double VisualRangeSquared = FMath::Square(boidPreset->VisualRange);
+	double ProtectedRangeSquared = FMath::Square(boidPreset->ProtectedRange);
 
 	FVector PositionAverage = FVector::ZeroVector;
 	FVector ForwardAverage = FVector::ZeroVector;
@@ -149,16 +147,16 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 		//ForwardAverage = ForwardAverage * ImGuiMods->MatchingFactor;
 		//SpeedAverage /= NeighboringBoids;
 
-		PositionAverage = ((PositionAverage / NeighboringBoids) - ActorLocation) * ImGuiMods->CenteringFactor;
+		PositionAverage = ((PositionAverage / NeighboringBoids) - ActorLocation) * boidPreset->CenteringFactor;
 		//ForwardAverage = ForwardAverage.GetSafeNormal() * ImGuiMods->MatchingFactor;
 		ForwardAverage = ForwardAverage;
 		//SpeedAverage /= NeighboringBoids;
 
-		CloseBoidPositionAverage *= ImGuiMods->AvoidBoidsFactor;
+		CloseBoidPositionAverage *= boidPreset->AvoidBoidsFactor;
 
 		//TargetDirection = (PositionAverage + ForwardAverage + CloseBoidPositionAverage) * .33333f;
 
-		TargetDirection = ((PositionAverage * ImGuiMods->CenteringFactor) + (ForwardAverage * ImGuiMods->MatchingFactor) + (CloseBoidPositionAverage * ImGuiMods->AvoidBoidsFactor)) * .33333f;
+		TargetDirection = ((PositionAverage * boidPreset->CenteringFactor) + (ForwardAverage * boidPreset->MatchingFactor) + (CloseBoidPositionAverage * boidPreset->AvoidBoidsFactor)) * .33333f;
 		TargetDirection = TargetDirection.GetSafeNormal();
 
 		//i think its always going up is cos forard average is normalised and position average is not
@@ -184,9 +182,9 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 
 		FQuat TargetQuat = TargetDirection.Rotation().Quaternion();
 
-		float AngleDiff = CurrentActorQuat.AngularDistance(TargetQuat) * ImGuiMods->GeneralTurningSpeed;
+		float AngleDiff = CurrentActorQuat.AngularDistance(TargetQuat) * boidPreset->GeneralTurningSpeed;
 
-		float DynamicAlpha = FMath::Clamp(AngleDiff * ImGuiMods->GeneralTurningSpeed, 0.0f, 2.0f);
+		float DynamicAlpha = FMath::Clamp(AngleDiff * boidPreset->GeneralTurningSpeed, 0.0f, 2.0f);
 
 		//FQuat NewDirection = FQuat::Slerp(CurrentActorQuat, TargetQuat, ImGuiMods->GeneralTurningSpeed * dt);
 		//FQuat NewDirection = FQuat::FastLerp(CurrentActorQuat, TargetQuat, DynamicAlpha * dt);

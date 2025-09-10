@@ -26,7 +26,7 @@ public:
 		const FVector& FirstBounds, 
 		const FVector& Secondbounds,
 		const FVector& CentreBounds,
-		ImGuiModifier* imguiMods);
+		std::shared_ptr<const BoidPreset> BPreset);
 
 	UPROPERTY(EditAnywhere)
 	float Speed = 1300.f;
@@ -56,15 +56,7 @@ private:
 		Acceleration = 0.1f,
 		SpeedTolerance = 0.3f;
 
-	ImGuiModifier* ImGuiMods;
-
-	//float 
-	//	*CenteringFactor,
-	//	*MatchingFactor,
-	//	*AvoidBoidsFactor,
-	//	*GeneralTurningSpeed,
-	//	*ProtectedRange,
-	//	*VisualRange;
+	std::shared_ptr<const BoidPreset> boidPreset;
 
 	FVector
 		UpperBounds = FVector::ZeroVector,
