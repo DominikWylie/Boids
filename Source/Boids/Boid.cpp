@@ -21,7 +21,7 @@ void ABoid::initialise(
 	const FVector& FBounds,
 	const FVector& Sbounds,
 	const FVector& CBounds,
-	std::shared_ptr<const BoidPreset> BPreset)
+	std::shared_ptr<const FBoidPreset> BPreset)
 {
 	Octree = Otree;
 	UpperBounds = FBounds;

@@ -17,7 +17,7 @@ ABoidSpawner::ABoidSpawner()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	boidPreset = ImGuiMods.GetCurrentPreset();
+	//boidPreset = ImGuiMods.GetCurrentPreset();
 }
 
 // Called when the game starts or when spawned
@@ -90,6 +90,8 @@ void ABoidSpawner::Spawn()
 
 void ABoidSpawner::Imgui()
 {
+
+	
 	//if (PC->WasInputKeyJustPressed("P")) {
 	//	FImGuiModule::Get().GetProperties().ToggleInput();
 	//	ImGui::SetNextWindowCollapsed(false);

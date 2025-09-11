@@ -39,9 +39,9 @@ protected:
 	void Spawn();
 private:
 
-	ImGuiModifier ImGuiMods;
+	FImGuiModifier ImGuiMods;
 
-	std::shared_ptr<const BoidPreset> boidPreset;
+	std::shared_ptr<const FBoidPreset> boidPreset;
 
 	void Imgui();
 

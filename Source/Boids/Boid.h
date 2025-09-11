@@ -26,7 +26,7 @@ public:
 		const FVector& FirstBounds, 
 		const FVector& Secondbounds,
 		const FVector& CentreBounds,
-		std::shared_ptr<const BoidPreset> BPreset);
+		std::shared_ptr<const FBoidPreset> BPreset);
 
 	UPROPERTY(EditAnywhere)
 	float Speed = 1300.f;
@@ -56,7 +56,7 @@ private:
 		Acceleration = 0.1f,
 		SpeedTolerance = 0.3f;
 
-	std::shared_ptr<const BoidPreset> boidPreset;
+	std::shared_ptr<const FBoidPreset> boidPreset;
 
 	FVector
 		UpperBounds = FVector::ZeroVector,

@@ -17,9 +17,11 @@ class BOIDS_API UBoidPresetSaves : public USaveGame
 {
 	GENERATED_BODY()
 
-	std::map<FString, BoidPreset> presets;
-
 public:
+	
+	UPROPERTY(VisibleAnywhere)
+	TMap<FName, FBoidPreset> Presets;
+	
 
 	//plan: swap all the ini file stuff to this system it should be way more seemless
 };
