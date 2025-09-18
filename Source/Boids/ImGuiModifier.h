@@ -64,11 +64,12 @@ private:
 	FString SaveSlotName = "BoidPresetSave1";
 
 	std::string directory = "Content/Boids/ValuePresets";
-
+	
+	TArray<FName> NamesArr;
 	TMap<FName, FBoidPreset> Presets;
-
-	// std::vector<FName> presetNames;
+	int32 CurrentItem = 0;
 
 	std::shared_ptr<FBoidPreset> currentPresetPtr;
+
 };
 
