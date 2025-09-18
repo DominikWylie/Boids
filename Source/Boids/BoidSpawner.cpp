@@ -17,7 +17,7 @@ ABoidSpawner::ABoidSpawner()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//boidPreset = ImGuiMods.GetCurrentPreset();
+	boidPreset = ImGuiMods.GetCurrentPreset();
 }
 
 // Called when the game starts or when spawned
@@ -28,6 +28,8 @@ void ABoidSpawner::BeginPlay()
 	World = GetWorld();
 
 	PC = GetWorld()->GetFirstPlayerController();
+
+	ImGuiMods.BeginPlay(GetWorld());
 
 	if (World) {
 		World->GetTimerManager().SetTimer(MyTimerHandle, this, &ABoidSpawner::Spawn, 0.01f, true);
@@ -151,10 +153,12 @@ void ABoidSpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Imgui();
+	//Imgui();
+
+	ImGuiMods.RenderImGui();
 
 
 	//DrawDebugBox(World, ((SecondBounds - GetActorLocation()) + (FirstBounds - GetActorLocation())) / 2, (FirstBounds - SecondBounds) / 2, FColor::Green);
-	if(bBoundingBoxVisibiliy)
-		DrawDebugBox(World, (SecondBounds + FirstBounds) * 0.5f, (FirstBounds - SecondBounds) * 0.5f, FColor::Green);
+	// if(bBoundingBoxVisibiliy)
+	// 	DrawDebugBox(World, (SecondBounds + FirstBounds) * 0.5f, (FirstBounds - SecondBounds) * 0.5f, FColor::Green);
 }

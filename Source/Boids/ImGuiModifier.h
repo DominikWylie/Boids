@@ -9,6 +9,8 @@
 
 #include "ImGuiModifier.generated.h"
 
+class AOctreeMain;
+
 USTRUCT()
 struct FBoidPreset {
 	//keep the default values above for safety
@@ -41,15 +43,21 @@ struct FImGuiModifier
 	
 	FImGuiModifier();
 
-	void Save();
-
+	void BeginPlay(UWorld* World);
+	
 	void RenderImGui();
 	
 	//set and forget, this pointer changes when presets are swapped
 	std::shared_ptr<const FBoidPreset> GetCurrentPreset() const {return currentPresetPtr;}
 
 private:
+	
+	void Save();
 	void Load();
+
+	APlayerController* PC;
+
+	TObjectPtr<AOctreeMain> Octree;
 	
 	bool Initialised = false;
 
@@ -59,7 +67,7 @@ private:
 
 	TMap<FName, FBoidPreset> Presets;
 
-	std::vector<std::string> presetNames;
+	// std::vector<FName> presetNames;
 
 	std::shared_ptr<FBoidPreset> currentPresetPtr;
 };
