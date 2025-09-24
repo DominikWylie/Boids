@@ -38,6 +38,9 @@ public:
 	bool bBoundingBoxVisibiliy = true;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
+	bool bInGameOctreeBoundingBoxVisibility = false;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
 	uint8 MaxNodesPerOctant = 6;
 
 	void AddNode(IOctreeInterface* Node);
@@ -53,7 +56,7 @@ public:
 protected:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
-
+ 
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void BeginPlay() override;
@@ -83,7 +86,4 @@ private:
 	//virtual void Tick(float DeltaTime) override;
 	virtual bool ShouldTickIfViewportsOnly() const override { return true; }
 #endif
-
-	//todo
-	//create custom AABB collision for axis alighned efficiancy
 };

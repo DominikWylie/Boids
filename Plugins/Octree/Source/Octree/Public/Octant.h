@@ -43,7 +43,7 @@ private:
 
 	const uint16 MaxNodesPerOctant;
 
-	const bool bBoundingBoxVisibiliy;
+	const bool bInGameOctreeBoundingBoxVisibility;
 
 	FVector FirstCorner;
 	FVector SecondCorner;

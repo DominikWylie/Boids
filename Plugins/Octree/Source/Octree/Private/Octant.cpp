@@ -21,12 +21,12 @@ Octant::Octant(
 	NodeList(NList),
 	MaxNodesPerOctant(MaxNodesPerOct),
 	World(Wrld),
-	bBoundingBoxVisibiliy(bBBoxVisibiliy)
+	bInGameOctreeBoundingBoxVisibility(bBBoxVisibiliy)
 {
 #if WITH_EDITOR
-	//if (bBoundingBoxVisibiliy) {
-	//	DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, BoxColour);
-	//}
+	// if (bInGameOctreeBoundingBoxVisibility) {
+	// 	DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, BoxColour);
+	// }
 #endif
 
 	//if exeeds max nodes subdivide and pass nodes to them to do thier thing
@@ -65,8 +65,8 @@ TArray<IOctreeInterface*> Octant::NodeQuery(const FVector& Centre, const float E
 
 	if (!subdevided) {
 		//end of tree
-		if (bBoundingBoxVisibiliy) {
-			//DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, BoxColour);
+		if (bInGameOctreeBoundingBoxVisibility) {
+			DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) / 2, (FirstCorner - SecondCorner) / 2, BoxColour);
 			//DrawDebugString(World, FirstCorner + WorldLocation, FString::FromInt(NodeMatchIDTemp));
 		}
 		return NodeList;
@@ -97,7 +97,7 @@ void Octant::SubdivideTree()
 		TopFrontLeftNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	//top front right
@@ -114,7 +114,7 @@ void Octant::SubdivideTree()
 		TopFrontRightNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	//top back left
@@ -131,7 +131,7 @@ void Octant::SubdivideTree()
 		TopBackLeftNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	//top back right
@@ -148,7 +148,7 @@ void Octant::SubdivideTree()
 		TopBackRightNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	//bottom front left
@@ -165,7 +165,7 @@ void Octant::SubdivideTree()
 		BottomFrontLeftNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	//bottom front right
@@ -182,7 +182,7 @@ void Octant::SubdivideTree()
 		BottomFrontRightNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	//bottom back left
@@ -199,7 +199,7 @@ void Octant::SubdivideTree()
 		BottomBackLeftNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	//bottom back right
@@ -216,7 +216,7 @@ void Octant::SubdivideTree()
 		BottomBackRightNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	subdevided = true;
