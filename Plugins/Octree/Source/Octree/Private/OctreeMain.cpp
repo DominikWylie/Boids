@@ -12,7 +12,7 @@ AOctreeMain::AOctreeMain()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 	PrimaryActorTick.bCanEverTick = true;
 
-	World = GetWorld();
+	//World = GetWorld();
 
 #if WITH_EDITOR
 	bRunConstructionScriptOnDrag = true; //for visual updates while moving in editor
@@ -26,12 +26,24 @@ void AOctreeMain::AddNode(IOctreeInterface* Node)
 
 	//FVector NodePosition = Node->GetPosition();
 
+	if (!Node)
+	{
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("node invalid"));
+		return;
+	}
+
 	if (!IsWithinArea(Node->GetPosition())) {
 		Node->Kill();
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("node killed"));
 		return;
 	}
 
 	NodeList.Add(Node);
+
+	// if (GEngine)
+	// 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("node added to list"));
 
 	//if (GEngine)
 	//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("node Added"));
@@ -64,9 +76,13 @@ void AOctreeMain::OnConstruction(const FTransform& Transform)
 
 void AOctreeMain::DrawBox()
 {
-	if (bBoundingBoxVisibiliy) {
-		DrawDebugBox(World, ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) * 0.5f, (FirstCorner - SecondCorner) * 0.5f, FColor::Red);
-	}
+#if WITH_EDITOR
+	if (!bBoundingBoxVisibiliy) return;
+#endif
+
+	if (!bInGameOctreeBoundingBoxVisibility) return;
+
+	DrawDebugBox(GetWorld(), ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) * 0.5f, (FirstCorner - SecondCorner) * 0.5f, FColor::Red);
 }
 
 void AOctreeMain::SubdivideTree()
@@ -81,6 +97,8 @@ void AOctreeMain::SubdivideTree()
 
 	SplitNodeList(TopFrontLeftNodes, TempNodesList, FirstCorner, FirstCorner + HalfDistance);
 
+	UWorld *World = GetWorld();
+	
 	Octants[0] = MakeUnique<Octant>(
 		FirstCorner,
 		FirstCorner + HalfDistance,
@@ -216,9 +234,11 @@ void AOctreeMain::SubdivideTree()
 
 bool AOctreeMain::IsWithinArea(const FVector& Location)
 {
-	FVector FirstWorldCorner = FirstCorner + GetActorLocation();
-	FVector SecondWorldCorner = SecondCorner + GetActorLocation();
+	FVector FirstWorldCorner;
+	FVector SecondWorldCorner;
 
+	GetWorldCorners(FirstWorldCorner, SecondWorldCorner);
+	
 	if (Location.X > FirstWorldCorner.X ||
 		Location.Y > FirstWorldCorner.Y ||
 		Location.Z > FirstWorldCorner.Z) {
@@ -236,20 +256,20 @@ bool AOctreeMain::IsWithinArea(const FVector& Location)
 
 bool AOctreeMain::IsWithinArea(const FVector& Location, const FVector& FCorner, const FVector& SCorner)
 {
-	FVector FirstWorldCorner = FCorner + GetActorLocation();
-	FVector SecondWorldCorner = SCorner + GetActorLocation();
+	FVector FirstWorldCorner = FCorner + WorldLocation;
+	FVector SecondWorldCorner = SCorner + WorldLocation;
 
 	if (Location.X > FirstWorldCorner.X ||
 		Location.Y > FirstWorldCorner.Y ||
 		Location.Z > FirstWorldCorner.Z) {
 		return false;
-	}
+		}
 
 	if (Location.X < SecondWorldCorner.X ||
 		Location.Y < SecondWorldCorner.Y ||
 		Location.Z < SecondWorldCorner.Z) {
 		return false;
-	}
+		}
 
 	return true;
 }
@@ -316,9 +336,8 @@ void AOctreeMain::Tick(float DeltaTime)
 		RebuildTree();
 	}
 
-#if WITH_EDITOR
 	DrawBox();
-#endif
+	
 }
 
 void AOctreeMain::BeginPlay()
@@ -327,33 +346,33 @@ void AOctreeMain::BeginPlay()
 
 	WorldLocation = GetActorLocation();
 
-	World = GetWorld();
+	//World = GetWorld();
 
 	if (FirstCorner.X < SecondCorner.X) {
-		int32 temp = FirstCorner.X;
+		double temp = FirstCorner.X;
 		FirstCorner.X = SecondCorner.X;
 		SecondCorner.X = temp;
 
-		//if (GEngine)
-		//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped x"));
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped x"));
 	}
 
 	if (FirstCorner.Y < SecondCorner.Y) {
-		int32 temp = FirstCorner.Y;
+		double temp = FirstCorner.Y;
 		FirstCorner.Y = SecondCorner.Y;
 		SecondCorner.Y = temp;
 
-		//if (GEngine)
-		//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped y"));
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped y"));
 	}
 
 	if (FirstCorner.Z < SecondCorner.Z) {
-		int32 temp = FirstCorner.Z;
+		double temp = FirstCorner.Z;
 		FirstCorner.Z = SecondCorner.Z;
 		SecondCorner.Z = temp;
 
-		//if (GEngine)
-		//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped z"));
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped z"));
 	}
 }
 
@@ -389,7 +408,7 @@ TArray<IOctreeInterface*> AOctreeMain::NodeQuery(const FVector& Centre, float Ex
 	TArray<IOctreeInterface*> QuerydNodeList;
 
 	for (const TUniquePtr<Octant>& octant : Octants) {
-		//now do this function in the next that i havent set up yet
+		//now do this function in the next that i haven't set up yet
 		QuerydNodeList += octant->NodeQuery(Centre, Extent);
 	}
 
@@ -402,4 +421,10 @@ void AOctreeMain::GetWorldCorners(FVector& UpperCorner, FVector& LowerCorner, FV
 	UpperCorner = FirstCorner + WorldLocation;
 	LowerCorner = SecondCorner + WorldLocation;
 	Centre = ((UpperCorner + LowerCorner) * 0.5f);
+}
+
+void AOctreeMain::GetWorldCorners(FVector& UpperCorner, FVector& LowerCorner)
+{
+	UpperCorner = FirstCorner + WorldLocation;
+	LowerCorner = SecondCorner + WorldLocation;
 }

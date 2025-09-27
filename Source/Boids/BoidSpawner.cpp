@@ -37,12 +37,16 @@ void ABoidSpawner::BeginPlay()
 
 	Octree = Cast<AOctreeMain>(UGameplayStatics::GetActorOfClass(World, AOctreeMain::StaticClass()));
 
-	if (Octree) {
+	if (IsValid(Octree)) {
 
 		Octree->GetWorldCorners(FirstBounds, SecondBounds, CentreBounds);
 
 		FirstBounds -= FVector(BoundsBuffer);
 		SecondBounds += FVector(BoundsBuffer);
+	}else
+	{
+		UE_LOG(LogTemp, Error, TEXT("No Octree to send to. [%s:%d] in %s"),
+		TEXT(__FILE__), __LINE__, TEXT(__FUNCTION__));
 	}
 }
 
@@ -65,11 +69,14 @@ void ABoidSpawner::Spawn()
 		BoidRotation.Pitch = FMath::RandRange(-180, 180);
 		BoidRotation.Roll = 0.f;
 
-		FVector SpawnLocation;
-		SpawnLocation.X = FMath::RandRange(Octree->SecondCorner.X, Octree->FirstCorner.X);
-		SpawnLocation.Y = FMath::RandRange(Octree->SecondCorner.Y, Octree->FirstCorner.Y);
-		SpawnLocation.Z = FMath::RandRange(Octree->SecondCorner.Z, Octree->FirstCorner.Z);
+		FVector OctreeFirstWorldCorner;
+		FVector OctreeSecondWorldCorner;
+		Octree->GetWorldCorners(OctreeFirstWorldCorner, OctreeSecondWorldCorner);
 
+		FVector SpawnLocation;
+		SpawnLocation.X = FMath::RandRange(OctreeSecondWorldCorner.X, OctreeFirstWorldCorner.X);
+		SpawnLocation.Y = FMath::RandRange(OctreeSecondWorldCorner.Y, OctreeFirstWorldCorner.Y);
+		SpawnLocation.Z = FMath::RandRange(OctreeSecondWorldCorner.Z, OctreeFirstWorldCorner.Z);
 
 		AActor* SpawnedBoid = World->SpawnActor<ABoid>(BoidBlueprint, SpawnLocation, BoidRotation);
 

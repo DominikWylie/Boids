@@ -52,7 +52,8 @@ public:
 	TArray<IOctreeInterface*> NodeQuery(const FVector& Centre, float Extent);
 
 	void GetWorldCorners(FVector& UpperCorner, FVector& LowerCorner, FVector& Centre);
-
+	void GetWorldCorners(FVector& UpperCorner, FVector& LowerCorner);
+	
 protected:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
@@ -68,13 +69,13 @@ private:
 
 	bool IsWithinArea(const FVector& Location);
 	bool IsWithinArea(const FVector& Location, const FVector& FirstCorner, const FVector& SecondCorner);
-
+	
 	void SplitNodeList(TArray<IOctreeInterface*>& OctantNodeList, TArray<IOctreeInterface*>& TempNodeList, const FVector& FirstCorner, const FVector& SecondCorner);
 
 	void RebuildTree();
 
 	FVector WorldLocation;
-	UWorld* World;
+	//UWorld* World;
 
 	TArray<IOctreeInterface*> NodeList;
 
