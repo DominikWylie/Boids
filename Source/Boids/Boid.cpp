@@ -97,6 +97,13 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 
 		SetActorRotation(BoundsNewDirection);
 
+		// if (GEngine)
+		// 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("hitting edge"));
+
+		DrawDebugString(GetWorld(), GetPosition(), GetPosition().ToString(), 0, FColor::White, 0);
+
+		//check(Octree);
+		
 		//this overrides the ai if it hits the edge
 		return;
 	}

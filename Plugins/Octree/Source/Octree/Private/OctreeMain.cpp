@@ -9,8 +9,10 @@ AOctreeMain::AOctreeMain()
 {
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
-	PrimaryActorTick.bStartWithTickEnabled = true;
-	PrimaryActorTick.bCanEverTick = true;
+	// PrimaryActorTick.bStartWithTickEnabled = true;
+	// PrimaryActorTick.bCanEverTick = true;
+	// SetTickableWhenPaused(true);
+	// SetActorTickEnabled(true);
 
 	//World = GetWorld();
 
@@ -331,6 +333,9 @@ void AOctreeMain::RebuildTree()
 //may be just a problem with the unreal vesion? in game tick only updates with 3 compiles too i still think its cos im using editor tick
 void AOctreeMain::Tick(float DeltaTime)
 {
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Green, TEXT("octree tick"));
+	
 	if (GetWorld() && GetWorld()->IsGameWorld()) {
 		Super::Tick(DeltaTime);
 		RebuildTree();
@@ -342,9 +347,24 @@ void AOctreeMain::Tick(float DeltaTime)
 
 void AOctreeMain::BeginPlay()
 {
+	PrimaryActorTick.bStartWithTickEnabled = true;
+	PrimaryActorTick.bCanEverTick = true;
+	SetTickableWhenPaused(true);
 	SetActorTickEnabled(true);
 
+	Super::BeginPlay();
+
 	WorldLocation = GetActorLocation();
+
+	FVector WFirstLoc, WSecondLoc;
+
+	GetWorldCorners(WFirstLoc, WSecondLoc);
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 10000.f, FColor::Green, TEXT("first corner : " + WFirstLoc.ToString()));
+		GEngine->AddOnScreenDebugMessage(2, 10000.f, FColor::Green, TEXT("second corner : " + WSecondLoc.ToString()));
+	}
 
 	//World = GetWorld();
 
@@ -374,6 +394,7 @@ void AOctreeMain::BeginPlay()
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("swapped z"));
 	}
+	
 }
 
 TArray<IOctreeInterface*> AOctreeMain::NodeQuery(const FVector& Centre, float Extent)

@@ -73,6 +73,8 @@ void ABoidSpawner::Spawn()
 		FVector OctreeSecondWorldCorner;
 		Octree->GetWorldCorners(OctreeFirstWorldCorner, OctreeSecondWorldCorner);
 
+		//in hindsight i should always call this lower and upper corners first and second just add a layer of confusion
+
 		FVector SpawnLocation;
 		SpawnLocation.X = FMath::RandRange(OctreeSecondWorldCorner.X, OctreeFirstWorldCorner.X);
 		SpawnLocation.Y = FMath::RandRange(OctreeSecondWorldCorner.Y, OctreeFirstWorldCorner.Y);

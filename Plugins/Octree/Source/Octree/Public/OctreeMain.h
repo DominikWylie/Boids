@@ -83,8 +83,8 @@ private:
 
 	bool subdevided = false;
 
-#if WITH_EDITOR
-	//virtual void Tick(float DeltaTime) override;
-	virtual bool ShouldTickIfViewportsOnly() const override { return true; }
-#endif
+// #if WITH_EDITOR
+// 	//virtual void Tick(float DeltaTime) override;
+// 	virtual bool ShouldTickIfViewportsOnly() const override { return true; }
+// #endif
 };
