@@ -13,8 +13,7 @@ class AOctreeMain;
 
 USTRUCT()
 struct FBoidPreset {
-	//keep the default values above for safety
-	//even tho they are replaces with the saved ones
+	//Default values are used if theres nothing saved to load
 
 	GENERATED_BODY()
 	

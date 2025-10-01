@@ -201,7 +201,6 @@ void FImGuiModifier::Load()
 	if (UBoidPresetSaves* PresetLoadInstance = Cast<UBoidPresetSaves>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0)))
 	{
 		this->Presets = PresetLoadInstance->Presets;
-		Presets.GetKeys(NamesArr);
 		
 		if(GEngine)
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("load successful"));
@@ -209,6 +208,11 @@ void FImGuiModifier::Load()
 	else
 	{
 		if(GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("load failed"));
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Save file doesnt exist, setting to default"));
+
+		Presets.Add("default", FBoidPreset());
 	}
+
+	Presets.GetKeys(NamesArr);
+
 }

@@ -46,7 +46,7 @@ private:
 	void Imgui();
 
 	FTimerHandle MyTimerHandle;
-	UWorld* World;
+	//UWorld* World;
 
 	TObjectPtr<AOctreeMain> Octree;
 

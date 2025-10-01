@@ -25,17 +25,17 @@ void ABoidSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	World = GetWorld();
+	//World = GetWorld();
 
 	PC = GetWorld()->GetFirstPlayerController();
 
 	ImGuiMods.BeginPlay(GetWorld());
 
-	if (World) {
-		World->GetTimerManager().SetTimer(MyTimerHandle, this, &ABoidSpawner::Spawn, 0.01f, true);
+	if (GetWorld()) {
+		GetWorld()->GetTimerManager().SetTimer(MyTimerHandle, this, &ABoidSpawner::Spawn, 0.01f, true);
 	}
 
-	Octree = Cast<AOctreeMain>(UGameplayStatics::GetActorOfClass(World, AOctreeMain::StaticClass()));
+	Octree = Cast<AOctreeMain>(UGameplayStatics::GetActorOfClass(GetWorld(), AOctreeMain::StaticClass()));
 
 	if (IsValid(Octree)) {
 
@@ -62,7 +62,7 @@ void ABoidSpawner::Spawn()
 		return;
 	}
 
-	if (World) {
+	if (GetWorld()) {
 		FRotator BoidRotation;
 
 		BoidRotation.Yaw = FMath::RandRange(-180, 180);
@@ -80,7 +80,7 @@ void ABoidSpawner::Spawn()
 		SpawnLocation.Y = FMath::RandRange(OctreeSecondWorldCorner.Y, OctreeFirstWorldCorner.Y);
 		SpawnLocation.Z = FMath::RandRange(OctreeSecondWorldCorner.Z, OctreeFirstWorldCorner.Z);
 
-		AActor* SpawnedBoid = World->SpawnActor<ABoid>(BoidBlueprint, SpawnLocation, BoidRotation);
+		AActor* SpawnedBoid = GetWorld()->SpawnActor<ABoid>(BoidBlueprint, SpawnLocation, BoidRotation);
 
 		ABoid* Boid = Cast<ABoid>(SpawnedBoid);
 		if (Boid) {
