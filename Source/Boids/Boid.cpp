@@ -78,33 +78,7 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 	FRotator ActorRotation = GetActorRotation();
 	FVector ActorLocation = GetActorLocation();
 	FQuat CurrentActorQuat = GetActorQuat();
-
-	if (ActorLocation.X > UpperBounds.X)
-	{
-		int ree = 77;
-	}
-	if (ActorLocation.Y > UpperBounds.Y)
-	{
-		int ree = 77;
-	}
-	if (ActorLocation.Z > UpperBounds.Z)
-	{
-		int ree = 77;
-	}
-	if (ActorLocation.X < LowerBounds.X)
-	{
-		int ree = 77;
-	}
-	if (ActorLocation.Y < LowerBounds.Y)
-	{
-		int ree = 77;
-	}
-	if (ActorLocation.Z < LowerBounds.Z)
-	{
-		int ree = 77;
-	}
 	
-
 	if (ActorLocation.X > UpperBounds.X ||
 		ActorLocation.Y > UpperBounds.Y ||
 		ActorLocation.Z > UpperBounds.Z ||
@@ -122,13 +96,6 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 		BoundsNewDirection.Normalize();
 
 		SetActorRotation(BoundsNewDirection);
-
-		// if (GEngine)
-		// 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("hitting edge"));
-
-		DrawDebugString(GetWorld(), GetPosition(), GetPosition().ToString(), 0, FColor::White, 0);
-
-		//check(Octree);
 		
 		//this overrides the ai if it hits the edge
 		return;
