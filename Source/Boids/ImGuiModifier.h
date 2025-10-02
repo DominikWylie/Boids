@@ -60,7 +60,7 @@ private:
 	
 	bool Initialised = false;
 
-	FString SaveSlotName = "BoidPresetSave1";
+	FString SaveSlotName = "BoidPresetSave";
 
 	std::string directory = "Content/Boids/ValuePresets";
 	

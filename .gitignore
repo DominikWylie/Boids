@@ -112,3 +112,6 @@ _UpgradeReport_Files/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+#custom tuning value saves
+!Saved/SaveGames/BoidPresetSave.sav
