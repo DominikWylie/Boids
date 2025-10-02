@@ -9,10 +9,10 @@ AOctreeMain::AOctreeMain()
 {
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
-	// PrimaryActorTick.bStartWithTickEnabled = true;
-	// PrimaryActorTick.bCanEverTick = true;
-	// SetTickableWhenPaused(true);
-	// SetActorTickEnabled(true);
+	PrimaryActorTick.bStartWithTickEnabled = true;
+	PrimaryActorTick.bCanEverTick = true;
+	SetTickableWhenPaused(true);
+	SetActorTickEnabled(true);
 
 	//World = GetWorld();
 
@@ -79,12 +79,17 @@ void AOctreeMain::OnConstruction(const FTransform& Transform)
 void AOctreeMain::DrawBox()
 {
 #if WITH_EDITOR
-	if (!bBoundingBoxVisibiliy) return;
+	if (!bBoundingBoxVisibiliy)
+	{
+		DrawDebugBox(GetWorld(), ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) * 0.5f, (FirstCorner - SecondCorner) * 0.5f, FColor::Red);
+		return;
+	}
 #endif
 
-	if (!bInGameOctreeBoundingBoxVisibility) return;
-
-	DrawDebugBox(GetWorld(), ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) * 0.5f, (FirstCorner - SecondCorner) * 0.5f, FColor::Red);
+	if (!bInGameOctreeBoundingBoxVisibility)
+	{
+		DrawDebugBox(GetWorld(), ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) * 0.5f, (FirstCorner - SecondCorner) * 0.5f, FColor::Red);
+	}
 }
 
 void AOctreeMain::SubdivideTree()
