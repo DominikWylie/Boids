@@ -79,14 +79,14 @@ void AOctreeMain::OnConstruction(const FTransform& Transform)
 void AOctreeMain::DrawBox()
 {
 #if WITH_EDITOR
-	if (!bBoundingBoxVisibiliy)
+	if (bBoundingBoxVisibiliy && GetWorld() && !GetWorld()->IsGameWorld())
 	{
 		DrawDebugBox(GetWorld(), ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) * 0.5f, (FirstCorner - SecondCorner) * 0.5f, FColor::Red);
 		return;
 	}
 #endif
 
-	if (!bInGameOctreeBoundingBoxVisibility)
+	if (bInGameOctreeBoundingBoxVisibility)
 	{
 		DrawDebugBox(GetWorld(), ((SecondCorner + WorldLocation) + (FirstCorner + WorldLocation)) * 0.5f, (FirstCorner - SecondCorner) * 0.5f, FColor::Red);
 	}
@@ -113,7 +113,7 @@ void AOctreeMain::SubdivideTree()
 		TopFrontLeftNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	//top front right
@@ -130,7 +130,7 @@ void AOctreeMain::SubdivideTree()
 		TopFrontRightNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	//top back left
@@ -147,7 +147,7 @@ void AOctreeMain::SubdivideTree()
 		TopBackLeftNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	//top back right
@@ -164,7 +164,7 @@ void AOctreeMain::SubdivideTree()
 		TopBackRightNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	//bottom front left
@@ -181,7 +181,7 @@ void AOctreeMain::SubdivideTree()
 		BottomFrontLeftNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	//bottom front right
@@ -198,7 +198,7 @@ void AOctreeMain::SubdivideTree()
 		BottomFrontRightNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	//bottom back left
@@ -215,7 +215,7 @@ void AOctreeMain::SubdivideTree()
 		BottomBackLeftNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	//bottom back right
@@ -232,7 +232,7 @@ void AOctreeMain::SubdivideTree()
 		BottomBackRightNodes,
 		MaxNodesPerOctant,
 		World,
-		bBoundingBoxVisibiliy
+		bInGameOctreeBoundingBoxVisibility
 	);
 
 	subdevided = true;
@@ -338,8 +338,8 @@ void AOctreeMain::RebuildTree()
 //may be just a problem with the unreal vesion? in game tick only updates with 3 compiles too i still think its cos im using editor tick
 void AOctreeMain::Tick(float DeltaTime)
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Green, TEXT("octree tick"));
+	// if (GEngine)
+	// 	GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Green, TEXT("octree tick"));
 	
 	if (GetWorld() && GetWorld()->IsGameWorld()) {
 		Super::Tick(DeltaTime);
@@ -444,13 +444,17 @@ TArray<IOctreeInterface*> AOctreeMain::NodeQuery(const FVector& Centre, float Ex
 //returns the bounds and centre of the octree in world coords
 void AOctreeMain::GetWorldCorners(FVector& UpperCorner, FVector& LowerCorner, FVector& Centre)
 {
-	UpperCorner = FirstCorner + WorldLocation;
-	LowerCorner = SecondCorner + WorldLocation;
+	// UpperCorner = FirstCorner + WorldLocation;
+	// LowerCorner = SecondCorner + WorldLocation;
+
+	UpperCorner = FirstCorner + GetActorLocation();
+	LowerCorner = SecondCorner + GetActorLocation();
+	
 	Centre = ((UpperCorner + LowerCorner) * 0.5f);
 }
 
 void AOctreeMain::GetWorldCorners(FVector& UpperCorner, FVector& LowerCorner)
 {
-	UpperCorner = FirstCorner + WorldLocation;
-	LowerCorner = SecondCorner + WorldLocation;
+	UpperCorner = FirstCorner + GetActorLocation();
+	LowerCorner = SecondCorner + GetActorLocation();
 }

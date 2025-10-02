@@ -79,6 +79,32 @@ void ABoid::CalculateTrajectory(TArray<IOctreeInterface*> Boids, float dt)
 	FVector ActorLocation = GetActorLocation();
 	FQuat CurrentActorQuat = GetActorQuat();
 
+	if (ActorLocation.X > UpperBounds.X)
+	{
+		int ree = 77;
+	}
+	if (ActorLocation.Y > UpperBounds.Y)
+	{
+		int ree = 77;
+	}
+	if (ActorLocation.Z > UpperBounds.Z)
+	{
+		int ree = 77;
+	}
+	if (ActorLocation.X < LowerBounds.X)
+	{
+		int ree = 77;
+	}
+	if (ActorLocation.Y < LowerBounds.Y)
+	{
+		int ree = 77;
+	}
+	if (ActorLocation.Z < LowerBounds.Z)
+	{
+		int ree = 77;
+	}
+	
+
 	if (ActorLocation.X > UpperBounds.X ||
 		ActorLocation.Y > UpperBounds.Y ||
 		ActorLocation.Z > UpperBounds.Z ||

@@ -34,9 +34,11 @@ public:
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Meta = (MakeEditWidget = true))
 	FVector SecondCorner = FVector(-50.f, -50.f, 50.f);
 
+	//for ease of placement and can turn off when unneeded
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
 	bool bBoundingBoxVisibiliy = true;
 
+	//for debugging if things go wrong
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
 	bool bInGameOctreeBoundingBoxVisibility = false;
 
