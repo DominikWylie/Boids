@@ -57,7 +57,7 @@ private:
 
 	APlayerController* PC;
 
-	float BoundsBuffer = 1000.f;
+	float BoundsBuffer = 100.f;
 
 	bool ShowVisualRangeSpheres = false;
 };
