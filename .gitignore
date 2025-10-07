@@ -101,6 +101,8 @@ enc_temp_folder/
 **/.idea/**/contentModel.xml
 **/.idea/**/modules.xml
 
+.idea/**/.idea/
+
 *.suo
 *.user
 .vs/
